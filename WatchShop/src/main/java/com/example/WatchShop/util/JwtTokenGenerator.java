@@ -10,7 +10,7 @@ public class JwtTokenGenerator {
     public static String generateAccessToken(Users user) {
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 giờ
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // Tokens last 1 hour
                 .signWith(SignatureAlgorithm.HS256, "secret")
                 .compact();
     }

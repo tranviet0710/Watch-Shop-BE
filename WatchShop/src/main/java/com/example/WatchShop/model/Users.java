@@ -1,5 +1,6 @@
 package com.example.WatchShop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Users {
     private Date birthDate;
     @Column(columnDefinition = "nvarchar(250)")
     private String address;
+    @JsonIgnore
     private String password;
     private String email;
     private String phone;
