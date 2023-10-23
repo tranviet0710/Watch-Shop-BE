@@ -23,6 +23,10 @@ public class ProductImpl implements ProductService {
 
     @Override
     public Optional<Products> getProductById(Long id) {
+        Optional<Products>  products = productRepository.findById(id);
+        if (products.isPresent()){
+
+        }
         return productRepository.findById(id);
     }
 
