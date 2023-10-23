@@ -7,10 +7,12 @@ import com.example.WatchShop.util.JwtTokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -24,17 +26,18 @@ public class UsersController {
             return ResponseEntity.badRequest().body(Map.of("status", 400, "error", "Email already exists in DB"));
         }
         userService.addUsers(usersDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", 200, "success", "User register successsfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", 200, "success", "User registed successsfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersDTO usersDTO) {
+
         Users user = userService.getUsers(usersDTO.getEmail(), usersDTO.getPassword());
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", 401, "error", "Invalid email or password"));
         }
-
+        user.setPassword(null);
         // Generate access token
         String accessToken = JwtTokenGenerator.generateAccessToken(user);
 

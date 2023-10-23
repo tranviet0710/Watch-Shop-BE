@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UsersReponsitory extends JpaRepository<Users, Integer> {
-
    Users findUserByEmail(String email);
 
    //check email in DB
