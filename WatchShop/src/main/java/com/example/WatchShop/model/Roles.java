@@ -13,8 +13,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

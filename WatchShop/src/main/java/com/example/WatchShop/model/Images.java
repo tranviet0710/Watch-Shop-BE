@@ -23,6 +23,4 @@ public class Images {
     @ManyToOne
     @JoinColumn(name = "idProduct",nullable=false)
     private Products products;
-
-
 }

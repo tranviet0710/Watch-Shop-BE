@@ -7,15 +7,14 @@ import com.example.WatchShop.util.JwtTokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin
+@RequestMapping("/api")
 public class UsersController {
     @Autowired
     private UserService userService;
@@ -23,25 +22,26 @@ public class UsersController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UsersDTO usersDTO) {
         if (userService.existsByEmail(usersDTO.getEmail())) {
-            return ResponseEntity.badRequest().body(Map.of("status", 400, "error", "Email already exists in DB"));
+            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Email already exists in DB"));
         }
         userService.addUsers(usersDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", 200, "success", "User registed successsfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "User register successsfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersDTO usersDTO) {
-
         Users user = userService.getUsers(usersDTO.getEmail(), usersDTO.getPassword());
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", 401, "error", "Invalid email or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "fail", "message", "Invalid email or password"));
         }
-        user.setPassword(null);
+
         // Generate access token
         String accessToken = JwtTokenGenerator.generateAccessToken(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", 200, "data", user, "accessToken", accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", user, "accessToken", accessToken));
     }
+
+
 
 }

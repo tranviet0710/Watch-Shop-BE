@@ -7,5 +7,5 @@ import java.util.Set;
 
 public interface ImageRepository extends JpaRepository<Images,Long> {
 
-    Set<Images> findAllByProducts(Long id);
+    Set<Images> findByProductsId(Long id);
 }

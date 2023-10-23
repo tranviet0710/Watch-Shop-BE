@@ -6,12 +6,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UsersReponsitory extends JpaRepository<Users, Integer> {
-   Users findUserByEmailAndPassword(String email, String password);
 
-   Users findUserByEmail(String email);
+   Users findByEmail(String email);
 
    //check email in DB
    boolean existsByEmail (String email);
-
 
 }

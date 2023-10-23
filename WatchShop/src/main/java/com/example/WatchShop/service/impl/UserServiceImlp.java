@@ -1,12 +1,15 @@
 package com.example.WatchShop.service.impl;
 
+import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.UsersDTO;
+import com.example.WatchShop.repository.RolesRepository;
 import com.example.WatchShop.repository.UsersReponsitory;
 import com.example.WatchShop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class UserServiceImlp implements UserService {
@@ -15,11 +18,16 @@ public class UserServiceImlp implements UserService {
     private UsersReponsitory usersReponsitory;
 
     @Autowired
+    private RolesRepository rolesRepository;
+
+    @Autowired
     private PasswordEncoder encoder;
+
 
     @Override
     public Users getUsers(String email, String password) {
-        Users user = usersReponsitory.findUserByEmail(email);
+        System.err.println(email + " email");
+        Users user = usersReponsitory.findByEmail(email);
         if (user != null && encoder.matches(password, user.getPassword())) {
             return user;
         }
@@ -33,9 +41,14 @@ public class UserServiceImlp implements UserService {
         users.setFullName(usersDTO.getFullName());
         users.setBirthDate(usersDTO.getBirthDate());
         users.setAddress(usersDTO.getAddress());
+        // encrypt the password hash
         users.setPassword(encoder.encode(usersDTO.getPassword()));
         users.setEmail(usersDTO.getEmail());
         users.setPhone(usersDTO.getPhone());
+
+        // Create Role_User
+        Roles roles = rolesRepository.findByName("ROLE_USER");
+        users.setRoles(roles);
         usersReponsitory.save(users);
     }
 
@@ -43,4 +56,6 @@ public class UserServiceImlp implements UserService {
     public boolean existsByEmail(String email) {
         return usersReponsitory.existsByEmail(email);
     }
+
+
 }
