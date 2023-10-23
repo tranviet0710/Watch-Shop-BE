@@ -1,11 +1,13 @@
 package com.example.WatchShop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Data
@@ -14,11 +16,12 @@ import java.sql.Date;
 public class Brands {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private Date createDate;
     private Date updateDate;
 
-    @OneToOne(mappedBy = "brands")
-    private Products products;
+    @OneToMany(mappedBy = "brands")
+    @JsonBackReference
+    private Set<Products> products;
 }

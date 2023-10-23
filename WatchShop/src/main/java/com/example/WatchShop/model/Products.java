@@ -36,7 +36,7 @@ public class Products {
     private Date createDate;
     private Date updateDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "idBrand")
     private Brands brands;
 

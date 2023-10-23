@@ -2,11 +2,13 @@ package com.example.WatchShop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Users {
@@ -21,18 +23,8 @@ public class Users {
     private String email;
     private String phone;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "idRole")
-    private Roles idRole;
+    private Roles roles;
 
-
-    public Users(String fullName, Date birthDate, String address, String password, String email, String phone, Roles idRole) {
-        this.fullName = fullName;
-        this.birthDate = birthDate;
-        this.address = address;
-        this.password = password;
-        this.email = email;
-        this.phone = phone;
-        this.idRole = idRole;
-    }
 }
