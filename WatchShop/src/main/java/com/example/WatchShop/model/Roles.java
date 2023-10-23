@@ -3,7 +3,9 @@ package com.example.WatchShop.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
@@ -11,6 +13,8 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
