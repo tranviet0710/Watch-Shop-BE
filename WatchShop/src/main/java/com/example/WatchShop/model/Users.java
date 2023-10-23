@@ -3,6 +3,7 @@ package com.example.WatchShop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.sql.Date;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
