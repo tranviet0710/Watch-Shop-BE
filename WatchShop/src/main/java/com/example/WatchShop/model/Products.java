@@ -1,9 +1,11 @@
 package com.example.WatchShop.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
@@ -13,6 +15,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude="images")
 public class Products {
 
     @Id
@@ -40,8 +43,8 @@ public class Products {
     @JoinColumn(name = "idBrand")
     private Brands brands;
 
-    @OneToMany(mappedBy = "products")
-    @JsonBackReference
+    @OneToMany(mappedBy = "products", fetch = FetchType.EAGER)
+//    @JsonManagedReference
     private Set<Images> images;
 
     @OneToMany(mappedBy = "products")
