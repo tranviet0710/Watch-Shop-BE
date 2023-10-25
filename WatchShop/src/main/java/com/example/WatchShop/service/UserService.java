@@ -5,6 +5,7 @@ import com.example.WatchShop.model.dto.UsersDTO;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -12,6 +13,8 @@ public interface UserService {
     Optional<Users> getUsersByEmailAndPassword(String email, String password);
 
     Optional<Users> getUserByEmail(String email);
+
+    List<Users> findAllUser();
 
     void addUsers(UsersDTO usersDTO);
 
@@ -24,8 +27,5 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     void sendRecoverPassword(Users user, String password) throws MessagingException;
-
-
-
 
 }

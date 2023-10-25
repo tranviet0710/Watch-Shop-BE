@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -105,6 +106,11 @@ public class UserServiceImlp implements UserService {
     @Override
     public Optional<Users> getUserByEmail(String email) {
         return usersReponsitory.findByEmail(email);
+    }
+
+    @Override
+    public List<Users> findAllUser() {
+        return usersReponsitory.findAll();
     }
 
     @Override

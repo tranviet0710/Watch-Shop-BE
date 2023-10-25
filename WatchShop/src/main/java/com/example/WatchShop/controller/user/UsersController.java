@@ -1,5 +1,6 @@
 package com.example.WatchShop.controller.user;
 
+import com.example.WatchShop.model.Brands;
 import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.UsersDTO;
 import com.example.WatchShop.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,6 +65,12 @@ public class UsersController {
         } else {
             return ResponseEntity.ok().body("Invalid email or email has not been registered!");
         }
+    }
+
+    @GetMapping("/list-users")
+    public ResponseEntity<?> getAllUser(){
+        List<Users> usersList = userService.findAllUser();
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", usersList));
     }
 
     @PutMapping("/update-users/{id}")
