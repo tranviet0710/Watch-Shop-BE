@@ -43,14 +43,11 @@ public class Products {
     private Brands brands;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.EAGER)
-//    @JsonManagedReference
     private Set<Images> images;
 
     @OneToMany(mappedBy = "products")
-    @JsonBackReference
     private Set<OrderDetail> orderDetails;
 
     @OneToMany(mappedBy = "products")
-    @JsonBackReference
     private Set<CartDetail> cartDetails;
 }
