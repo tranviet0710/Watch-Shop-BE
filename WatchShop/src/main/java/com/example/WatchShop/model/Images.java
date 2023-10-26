@@ -1,5 +1,6 @@
 package com.example.WatchShop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +23,6 @@ public class Images {
 
     @ManyToOne
     @JoinColumn(name = "idProduct",nullable=false)
+    @JsonIgnore
     private Products products;
 }

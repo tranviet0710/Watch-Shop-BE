@@ -13,4 +13,6 @@ public interface ProductService{
 
     List<Products> getTop5Saler();
 
+    Products save(Products products);
+
 }
