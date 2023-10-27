@@ -35,4 +35,9 @@ public class ProductImpl implements ProductService {
     public List<Products> getTop5Saler() {
         return null;
     }
+
+    @Override
+    public Products save(Products products) {
+        return productRepository.save(products);
+    }
 }
