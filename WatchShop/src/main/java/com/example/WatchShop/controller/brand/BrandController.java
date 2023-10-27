@@ -20,7 +20,7 @@ public class BrandController {
     private BrandServiceImpl brandService;
 
     @GetMapping("/")
-    public ResponseEntity<?> getALlBrand(){
+    public ResponseEntity<?> getALlBrand() {
         List<Brands> brandsList = brandService.getAllBrands();
         return ResponseEntity.ok(brandsList);
     }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Products,Long> {
+public interface ProductRepository extends JpaRepository<Products, Long> {
 
     List<Products> findAll();
 

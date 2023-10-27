@@ -17,15 +17,15 @@ public class ProductController {
     private ProductImpl product;
 
     //Lấy danh sách của product
-    @GetMapping( "/")
-    ResponseEntity<?> getAllProduct(){
-        List<Products> products  = product.findAllProduct();
+    @GetMapping("")
+    ResponseEntity<?> getAllProduct() {
+        List<Products> products = product.findAllProduct();
         return ResponseEntity.ok(products);
     }
 
     //lấy product theo id (detail)
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") Long id){
+    public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
         System.out.println(id);
         Optional<Products> products = product.getProductById(id);
         return ResponseEntity.ok(products.orElse(null));

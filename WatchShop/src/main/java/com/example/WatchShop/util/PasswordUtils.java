@@ -33,4 +33,5 @@ public class PasswordUtils {
         }
 
         return sb.toString();
-    }}
+    }
+}

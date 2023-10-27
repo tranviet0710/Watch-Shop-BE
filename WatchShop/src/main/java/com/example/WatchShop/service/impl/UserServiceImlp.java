@@ -8,7 +8,6 @@ import com.example.WatchShop.repository.UsersReponsitory;
 import com.example.WatchShop.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -75,17 +74,22 @@ public class UserServiceImlp implements UserService {
         Optional<Users> optionalUsers = usersReponsitory.findById(id);
         if (optionalUsers.isPresent()) {
             Users users = optionalUsers.get();
-            users.setFullName(usersDTO.getFullName());
-            users.setBirthDate(usersDTO.getBirthDate());
-            users.setAddress(usersDTO.getAddress());
-            users.setPassword(encoder.encode(usersDTO.getPassword()));
-
-            // update email if does not exists
-            if (!usersReponsitory.existsByEmail(usersDTO.getEmail())) {
-                users.setEmail(usersDTO.getEmail());
+            if (usersDTO.getFullName() != null) {
+                users.setFullName(usersDTO.getFullName());
+            }
+            if (usersDTO.getBirthDate() != null) {
+                users.setBirthDate(usersDTO.getBirthDate());
+            }
+            if (usersDTO.getAddress() != null) {
+                users.setAddress(usersDTO.getAddress());
+            }
+            if (usersDTO.getPassword() != null) {
+                users.setPassword(encoder.encode(usersDTO.getPassword()));
             }
 
-            users.setPhone(usersDTO.getPhone());
+            if (usersDTO.getPhone() != null) {
+                users.setPhone(usersDTO.getPhone());
+            }
             usersReponsitory.save(users);
 
             return users;
@@ -106,6 +110,11 @@ public class UserServiceImlp implements UserService {
     @Override
     public Optional<Users> getUserByEmail(String email) {
         return usersReponsitory.findByEmail(email);
+    }
+
+    @Override
+    public Optional<Users> getUserById(Long id) {
+        return usersReponsitory.findById(id);
     }
 
     @Override
@@ -137,10 +146,6 @@ public class UserServiceImlp implements UserService {
         sendEmail(user, "Forgot password", emailContent);
 
     }
-
-
-
-
 
 
 }

@@ -16,7 +16,7 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private Double start;
+    private Double star;
     private Date createDate;
     private Date updateDate;
 

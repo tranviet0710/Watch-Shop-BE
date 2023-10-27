@@ -1,6 +1,5 @@
 package com.example.WatchShop.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,7 @@ public class Images {
     private Date updateDate;
 
     @ManyToOne
-    @JoinColumn(name = "idProduct",nullable=false)
+    @JoinColumn(name = "idProduct", nullable = false)
     @JsonIgnore
     private Products products;
 }
