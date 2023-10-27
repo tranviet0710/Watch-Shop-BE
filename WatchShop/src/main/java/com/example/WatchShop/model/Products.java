@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "images")
+@EqualsAndHashCode(exclude="images")
 public class Products {
 
     @Id
