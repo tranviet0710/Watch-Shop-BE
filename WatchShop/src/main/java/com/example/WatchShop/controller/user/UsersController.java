@@ -1,7 +1,7 @@
 package com.example.WatchShop.controller.user;
 
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.req.UsersDTO;
+import com.example.WatchShop.model.dto.req.UsersReqDTO;
 import com.example.WatchShop.service.i_service.JwtService;
 import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.PasswordUtils;
@@ -31,7 +31,7 @@ public class UsersController {
     private JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UsersDTO usersDTO) {
+    public ResponseEntity<?> registerUser(@RequestBody UsersReqDTO usersDTO) {
         if (userService.existsByEmail(usersDTO.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Email already existed!"));
         }
@@ -41,7 +41,7 @@ public class UsersController {
 
     @CrossOrigin(origins = "http://localhost:3000/")
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UsersDTO usersDTO) {
+    public ResponseEntity<?> loginUser(@RequestBody UsersReqDTO usersDTO) {
         Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
 
         if (user == null) {
@@ -81,7 +81,7 @@ public class UsersController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UsersDTO usersDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<?> updateUser(@RequestBody UsersReqDTO usersDTO, @PathVariable("id") Long id) {
         Users updateUsers = userService.updateUsers(usersDTO, id);
         if (updateUsers == null) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "fail", "message", "Users update failed"));

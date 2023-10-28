@@ -1,4 +1,4 @@
-package com.example.WatchShop.model.dto.res;
+package com.example.WatchShop.model.dto.req;
 
 import com.example.WatchShop.model.CartDetail;
 import lombok.Getter;

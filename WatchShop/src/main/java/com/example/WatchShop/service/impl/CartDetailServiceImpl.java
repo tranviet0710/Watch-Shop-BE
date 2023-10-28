@@ -17,4 +17,9 @@ public class CartDetailServiceImpl implements CartDetailService {
     public List<CartDetail> getAllCartDetails() {
         return cartDetailRepository.findAll();
     }
+
+    @Override
+    public void save(CartDetail cartDetail) {
+        cartDetailRepository.save(cartDetail);
+    }
 }

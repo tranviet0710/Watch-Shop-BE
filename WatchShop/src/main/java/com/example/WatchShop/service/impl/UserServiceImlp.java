@@ -2,7 +2,7 @@ package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.req.UsersDTO;
+import com.example.WatchShop.model.dto.req.UsersReqDTO;
 import com.example.WatchShop.repository.RolesRepository;
 import com.example.WatchShop.repository.UsersRepository;
 import com.example.WatchShop.service.i_service.JwtService;
@@ -57,7 +57,7 @@ public class UserServiceImlp implements UserService {
     }
 
     @Override
-    public void addUsers(UsersDTO usersDTO) {
+    public void addUsers(UsersReqDTO usersDTO) {
         Users users = new Users();
         users.setFullName(usersDTO.getFullName());
         users.setBirthDate(usersDTO.getBirthDate());
@@ -74,7 +74,7 @@ public class UserServiceImlp implements UserService {
     }
 
     @Override
-    public Users updateUsers(UsersDTO usersDTO, Long id) {
+    public Users updateUsers(UsersReqDTO usersDTO, Long id) {
         Optional<Users> optionalUsers = usersRepository.findById(id);
         if (optionalUsers.isPresent()) {
             Users users = optionalUsers.get();

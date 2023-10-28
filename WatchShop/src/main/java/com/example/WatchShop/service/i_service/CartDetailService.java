@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CartDetailService {
     public List<CartDetail> getAllCartDetails();
+
+    void save(CartDetail cartDetail);
 }

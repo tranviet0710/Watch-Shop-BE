@@ -11,7 +11,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UsersDTO {
+public class UsersReqDTO {
     private String fullName;
     private Date birthDate;
     private String address;

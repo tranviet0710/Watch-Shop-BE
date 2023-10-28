@@ -1,7 +1,7 @@
 package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.req.UsersDTO;
+import com.example.WatchShop.model.dto.req.UsersReqDTO;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -18,9 +18,9 @@ public interface UserService {
 
     List<Users> findAllUser();
 
-    void addUsers(UsersDTO usersDTO);
+    void addUsers(UsersReqDTO usersDTO);
 
-    Users updateUsers(UsersDTO usersDTO, Long id);
+    Users updateUsers(UsersReqDTO usersDTO, Long id);
 
     void deleteById(Long id);
 
