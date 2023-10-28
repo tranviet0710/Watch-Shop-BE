@@ -1,7 +1,6 @@
-package com.example.WatchShop.service;
+package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Rating;
-import org.springframework.stereotype.Service;
 
 public interface RatingService {
     Rating addRating(Rating rating);

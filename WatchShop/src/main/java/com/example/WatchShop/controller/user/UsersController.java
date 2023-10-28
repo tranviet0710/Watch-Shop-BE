@@ -1,9 +1,9 @@
 package com.example.WatchShop.controller.user;
 
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.UsersDTO;
-import com.example.WatchShop.service.UserService;
-import com.example.WatchShop.util.JwtTokenGenerator;
+import com.example.WatchShop.model.dto.req.UsersDTO;
+import com.example.WatchShop.service.i_service.JwtService;
+import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.PasswordUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,8 @@ public class UsersController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UsersDTO usersDTO) {
@@ -37,6 +39,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "User register successfully."));
     }
 
+    @CrossOrigin(origins = "http://localhost:3000/")
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersDTO usersDTO) {
         Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
@@ -46,7 +49,7 @@ public class UsersController {
         }
 
         // Generate access token
-        String accessToken = JwtTokenGenerator.generateAccessToken(user);
+        String accessToken = jwtService.generateToken(user.get(), user.get().getAuthorities());
 
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", user, "accessToken", accessToken));
     }

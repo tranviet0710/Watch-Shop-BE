@@ -14,5 +14,5 @@ public interface BrandRepository extends JpaRepository<Brands, Long> {
 
     void removeById(Long id);
 
-    Optional<Brands> findById (Long id);
+    Optional<Brands> findById(Long id);
 }

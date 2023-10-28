@@ -1,4 +1,4 @@
-package com.example.WatchShop.model.dto;
+package com.example.WatchShop.model.dto.req;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

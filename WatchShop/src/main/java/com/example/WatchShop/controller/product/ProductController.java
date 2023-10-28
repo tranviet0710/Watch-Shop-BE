@@ -28,28 +28,38 @@ public class ProductController {
     private ImageRepository imageRepository;
 
     //Lấy danh sách của product
-    @GetMapping( "/")
-    ResponseEntity<?> getAllProduct(){
-        List<Products> products  = product.findAllProduct();
-        if (products.isEmpty()){
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data",null));
+    @GetMapping("/")
+    ResponseEntity<?> getAllProduct() {
+        List<Products> products = product.findAllProduct();
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data",products));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
+    }
+
+    @GetMapping("/top5")
+    ResponseEntity<?> getTop5Product() {
+        List<Products> products = product.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
+                sorted(Comparator.comparing(Products::getSoldQuantity)).limit(5).toList();
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
     }
 
     //lấy product theo id (detail)
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") Long id){
+    public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
         Optional<Products> products = product.getProductById(id);
         return ResponseEntity.ok(products.orElse(null));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addProduct(@RequestBody Products products,@RequestParam("imgFile") MultipartFile imgFile) throws IOException {
+    public ResponseEntity<?> addProduct(@RequestBody Products products, @RequestParam("imgFile") MultipartFile imgFile) throws IOException {
         Calendar calendar = Calendar.getInstance();
         Date currentDate = new Date(calendar.getTime().getTime());
 
-        Images images =new Images();
+        Images images = new Images();
         if (!imgFile.isEmpty()) {
             byte[] bytes = imgFile.getBytes();
             Path path = Paths.get("src/main/resources/img/" + imgFile.getOriginalFilename());
@@ -61,7 +71,7 @@ public class ProductController {
         Products savedProduct = product.save(products);
         if (savedProduct != null) {
             imageRepository.save(images);
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data","Product added successfully!"));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product added successfully!"));
         } else {
             return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Failed to add product!"));
         }
@@ -76,7 +86,7 @@ public class ProductController {
             updatedProduct.setUpdateDate(currentDate);
             Products savedProduct = product.save(updatedProduct);
             if (savedProduct != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data","Product update successful!"));
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product update successful!"));
             } else {
                 return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Failed to add product!"));
             }

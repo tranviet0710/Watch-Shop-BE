@@ -2,7 +2,7 @@ package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.repository.ProductRepository;
-import com.example.WatchShop.service.ProductService;
+import com.example.WatchShop.service.i_service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

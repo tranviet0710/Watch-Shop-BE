@@ -1,40 +1,37 @@
 package com.example.WatchShop.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude="images")
 public class Products {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private double price;
-    private double discount;
+    private Double price;
+    private Double discount;
     private String description;
-    private int quantity;
+    private Integer quantity;
+    private Integer soldQuantity = 0;
     private String model;
     private String color;
     private String origin;
-    private int warrantyPeriod;
-    private double screenSize;
-    private double faceSize;
+    private Integer warrantyPeriod;
+    private Double screenSize;
+    private Double faceSize;
     private String faceMaterial;
     private String frameMaterial;
     private String wireMaterial;
-    private double productWeight;
+    private Double productWeight;
     private Date createDate;
     private Date updateDate;
 

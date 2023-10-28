@@ -1,8 +1,9 @@
-package com.example.WatchShop.service;
+package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.UsersDTO;
+import com.example.WatchShop.model.dto.req.UsersDTO;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,5 +29,7 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     void sendRecoverPassword(Users user, String password) throws MessagingException;
+
+    public Optional<Users> getUserFromRequest(HttpServletRequest request);
 
 }

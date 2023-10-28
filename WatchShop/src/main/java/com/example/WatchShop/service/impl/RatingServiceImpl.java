@@ -2,7 +2,7 @@ package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Rating;
 import com.example.WatchShop.repository.RatingRepository;
-import com.example.WatchShop.service.RatingService;
+import com.example.WatchShop.service.i_service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public Rating getRatingByUserIdAndProductId(Long idUser, Long idProduct) {
-        return ratingRepository.findByUsersIdAndProductsId(idUser,idProduct);
+        return ratingRepository.findByUsersIdAndProductsId(idUser, idProduct);
     }
 
     @Override
