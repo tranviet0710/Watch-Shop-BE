@@ -84,14 +84,14 @@ public class UsersController {
         if (updateUsers == null) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "fail", "message", "Users update failed"));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "Users update successsfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "Users update successfully"));
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         try {
             userService.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "Users delete successsfully"));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "Users delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("status", "fail", "message", "Users delete failed"));
         }

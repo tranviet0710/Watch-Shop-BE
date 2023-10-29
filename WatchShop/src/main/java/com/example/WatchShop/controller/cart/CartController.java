@@ -73,17 +73,17 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-//    @DeleteMapping("/")
-//    public ResponseEntity<?> deleteFromCart(@Valid @RequestBody CartReqDTO cartReqDTO) {
-//        Users user = userService.getUserById(cartReqDTO.getUserId()).get();
-//        if (user != null) {
-//            Carts cart = cartService.getCartByUserId(user.getId());
-//            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c->c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
-//            if(cartDetail.isPresent()) {
-//                cartDetailService.remove(cartDetail.get());
-//            }
-//            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailReqDTO(cartDetail.get())));
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body(null);
-//    }
+    @DeleteMapping("/")
+    public ResponseEntity<?> deleteFromCart(@Valid @RequestBody CartReqDTO cartReqDTO) {
+        Users user = userService.getUserById(cartReqDTO.getUserId()).get();
+        if (user != null) {
+            Carts cart = cartService.getCartByUserId(user.getId());
+            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c->c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+            if(cartDetail.isPresent()) {
+                cartDetailService.remove(cartDetail.get());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailReqDTO(cartDetail.get())));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }
