@@ -2,6 +2,7 @@ package com.example.WatchShop.controller.user;
 
 import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.req.UsersReqDTO;
+import com.example.WatchShop.model.dto.res.UserResDTO;
 import com.example.WatchShop.service.i_service.JwtService;
 import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.PasswordUtils;
@@ -43,15 +44,12 @@ public class UsersController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersReqDTO usersDTO) {
         Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "fail", "message", "Invalid email or password!"));
         }
-
         // Generate access token
         String accessToken = jwtService.generateToken(user.get(), user.get().getAuthorities());
-
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", user, "accessToken", accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new UserResDTO(user.get()), "accessToken", accessToken));
     }
 
     @PostMapping("/forgot-password")
