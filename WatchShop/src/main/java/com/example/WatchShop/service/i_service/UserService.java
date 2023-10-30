@@ -32,4 +32,6 @@ public interface UserService {
 
     public Optional<Users> getUserFromRequest(HttpServletRequest request);
 
+    public boolean isCorrectPassword(Users user, String currentPassword);
+
 }

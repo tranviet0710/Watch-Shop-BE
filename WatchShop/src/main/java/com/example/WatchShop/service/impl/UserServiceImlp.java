@@ -158,4 +158,7 @@ public class UserServiceImlp implements UserService {
         return optionalUser;
     }
 
+    public boolean isCorrectPassword(Users user, String currentPassword) {
+        return encoder.matches(currentPassword, user.getPassword());
+    }
 }

@@ -7,6 +7,7 @@ import com.example.WatchShop.service.i_service.JwtService;
 import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.PasswordUtils;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,19 @@ public class UsersController {
             return ResponseEntity.ok().body("Please check your email to get recovery password!");
         } else {
             return ResponseEntity.ok().body("Invalid email or email has not been registered!");
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Object> changePassword(HttpServletRequest request, @RequestBody Map<String, String> passwords) {
+        Users user = userService.getUserFromRequest(request).get();
+        if (userService.isCorrectPassword(user, passwords.get("currentPassword"))) {
+            String newPassword = passwordEncoder.encode(passwords.get("newPassword"));
+            user.setPassword(newPassword);
+            userService.save(user);
+            return ResponseEntity.ok().body("Change password successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Your current password is not correct. Please try again!");
         }
     }
 
