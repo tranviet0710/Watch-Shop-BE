@@ -1,6 +1,8 @@
 package com.example.WatchShop.controller.rating;
 
 import com.example.WatchShop.model.Rating;
+import com.example.WatchShop.model.dto.req.RatingReqDTO;
+import com.example.WatchShop.model.dto.res.RatingResDTO;
 import com.example.WatchShop.service.impl.RatingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,13 @@ public class RatingController {
     ResponseEntity<?> getAllRating(@RequestParam("userId") Long userId, @RequestParam("productId") Long productId) {
         Rating rating = ratingService.getRatingByUserIdAndProductId(userId, productId);
         if (rating != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", rating));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new RatingResDTO(rating)));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", rating));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
+    }
+
+    @PostMapping("/")
+    ResponseEntity<?> getAllRating(@RequestBody RatingReqDTO ratingReqDTO) {
+        return null;
     }
 }

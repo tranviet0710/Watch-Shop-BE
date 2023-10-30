@@ -2,6 +2,7 @@ package com.example.WatchShop.controller.product;
 
 import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
+import com.example.WatchShop.model.dto.res.ProductResDTO;
 import com.example.WatchShop.repository.ImageRepository;
 import com.example.WatchShop.service.impl.ProductImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,11 @@ public class ProductController {
     @GetMapping("/")
     ResponseEntity<?> getAllProduct() {
         List<Products> products = product.findAllProduct();
+        List<ProductResDTO> productResDTOS = products.stream().map(ProductResDTO::new).toList();
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productResDTOS));
     }
 
     @GetMapping("/top5")
@@ -44,18 +46,19 @@ public class ProductController {
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
+        List<ProductResDTO> productResDTOS = products.stream().map(ProductResDTO::new).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productResDTOS));
     }
 
     //lấy product theo id (detail)
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
         Optional<Products> products = product.getProductById(id);
-        return ResponseEntity.ok(products.orElse(null));
+        return ResponseEntity.ok(new ProductResDTO(products.get()));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addProduct(@RequestBody Products products, @RequestParam("imgFile") MultipartFile imgFile) throws IOException {
+    @PostMapping("/")
+    public ResponseEntity<?> addProduct(@ModelAttribute Products products, @RequestParam("imgFile") MultipartFile imgFile) throws IOException {
         Calendar calendar = Calendar.getInstance();
         Date currentDate = new Date(calendar.getTime().getTime());
 
@@ -77,7 +80,7 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable("id") Long id, @RequestBody Products updatedProduct) {
         Optional<Products> optionalProduct = product.getProductById(id);
         if (optionalProduct.isPresent()) {

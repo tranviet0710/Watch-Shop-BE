@@ -8,7 +8,7 @@ import java.sql.Date;
 
 @Getter
 @Setter
-public class CartDetailReqDTO {
+public class CartDetailResDTO {
     private long id;
     private int quantity;
     private Date createDate;
@@ -17,7 +17,7 @@ public class CartDetailReqDTO {
     private String productName;
 
     private Long cartId;
-    public CartDetailReqDTO(CartDetail cartDetail){
+    public CartDetailResDTO(CartDetail cartDetail){
         this.id = cartDetail.getId();
         this.quantity = cartDetail.getQuantity();
         this.createDate = cartDetail.getCreateDate();

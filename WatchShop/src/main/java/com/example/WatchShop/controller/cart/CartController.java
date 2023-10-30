@@ -4,7 +4,7 @@ import com.example.WatchShop.model.CartDetail;
 import com.example.WatchShop.model.Carts;
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.req.CartDetailReqDTO;
+import com.example.WatchShop.model.dto.req.CartDetailResDTO;
 import com.example.WatchShop.model.dto.req.CartReqDTO;
 import com.example.WatchShop.service.i_service.CartDetailService;
 import com.example.WatchShop.service.i_service.CartService;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("api/cart")
@@ -41,9 +40,9 @@ public class CartController {
         Users user = userService.getUserFromRequest(request).get();
         if (user != null) {
             Carts c = cartService.getCartByUserId(user.getId());
-            List<CartDetailReqDTO> cartDetailReqDTOS = c.getCartDetails().stream().map(CartDetailReqDTO::new).toList();
+            List<CartDetailResDTO> cartDetailResDTOS = c.getCartDetails().stream().map(CartDetailResDTO::new).toList();
             if (c != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", cartDetailReqDTOS));
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", cartDetailResDTOS));
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -68,7 +67,7 @@ public class CartController {
                 cartDetail1.setQuantity(1);
             }
             CartDetail savedCartDetail = cartDetailService.save(cartDetail1);
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailReqDTO(savedCartDetail)));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(savedCartDetail)));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -82,7 +81,7 @@ public class CartController {
             if(cartDetail.isPresent()) {
                 cartDetailService.remove(cartDetail.get());
             }
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailReqDTO(cartDetail.get())));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
