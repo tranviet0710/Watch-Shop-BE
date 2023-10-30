@@ -2,7 +2,7 @@ package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.repository.ProductRepository;
-import com.example.WatchShop.service.ProductService;
+import com.example.WatchShop.service.i_service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +23,8 @@ public class ProductImpl implements ProductService {
 
     @Override
     public Optional<Products> getProductById(Long id) {
-        Optional<Products>  products = productRepository.findById(id);
-        if (products.isPresent()){
+        Optional<Products> products = productRepository.findById(id);
+        if (products.isPresent()) {
 
 
         }
@@ -34,5 +34,10 @@ public class ProductImpl implements ProductService {
     @Override
     public List<Products> getTop5Saler() {
         return null;
+    }
+
+    @Override
+    public Products save(Products products) {
+        return productRepository.save(products);
     }
 }

@@ -1,16 +1,14 @@
 package com.example.WatchShop.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Images {
@@ -23,7 +21,7 @@ public class Images {
     private Date updateDate;
 
     @ManyToOne
-    @JoinColumn(name = "idProduct",nullable=false)
+    @JoinColumn(name = "idProduct", nullable = false)
     @JsonIgnore
     private Products products;
 }

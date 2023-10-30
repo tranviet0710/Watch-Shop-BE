@@ -2,10 +2,11 @@ package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
-import com.example.WatchShop.model.dto.UsersDTO;
+import com.example.WatchShop.model.dto.req.UsersReqDTO;
 import com.example.WatchShop.repository.RolesRepository;
-import com.example.WatchShop.repository.UsersReponsitory;
-import com.example.WatchShop.service.UserService;
+import com.example.WatchShop.repository.UsersRepository;
+import com.example.WatchShop.service.i_service.JwtService;
+import com.example.WatchShop.service.i_service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import java.util.Optional;
 public class UserServiceImlp implements UserService {
 
     @Autowired
-    private UsersReponsitory usersReponsitory;
+    private UsersRepository usersRepository;
 
     @Autowired
     private RolesRepository rolesRepository;
@@ -42,10 +43,12 @@ public class UserServiceImlp implements UserService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    private JwtService jwtService;
 
     @Override
     public Optional<Users> getUsersByEmailAndPassword(String email, String password) {
-        Optional<Users> user = usersReponsitory.findByEmail(email);
+        Optional<Users> user = usersRepository.findByEmail(email);
         if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
             return user;
         }
@@ -53,7 +56,7 @@ public class UserServiceImlp implements UserService {
     }
 
     @Override
-    public void addUsers(UsersDTO usersDTO) {
+    public void addUsers(UsersReqDTO usersDTO) {
         Users users = new Users();
         users.setFullName(usersDTO.getFullName());
         users.setBirthDate(usersDTO.getBirthDate());
@@ -66,26 +69,31 @@ public class UserServiceImlp implements UserService {
         // Create Role_User
         Roles roles = rolesRepository.findByName("ROLE_USER");
         users.setRoles(roles);
-        usersReponsitory.save(users);
+        usersRepository.save(users);
     }
 
     @Override
-    public Users updateUsers(UsersDTO usersDTO, Long id) {
-        Optional<Users> optionalUsers = usersReponsitory.findById(id);
+    public Users updateUsers(UsersReqDTO usersDTO, Long id) {
+        Optional<Users> optionalUsers = usersRepository.findById(id);
         if (optionalUsers.isPresent()) {
             Users users = optionalUsers.get();
-            users.setFullName(usersDTO.getFullName());
-            users.setBirthDate(usersDTO.getBirthDate());
-            users.setAddress(usersDTO.getAddress());
-            users.setPassword(encoder.encode(usersDTO.getPassword()));
-
-            // update email if does not exists
-            if (!usersReponsitory.existsByEmail(usersDTO.getEmail())) {
-                users.setEmail(usersDTO.getEmail());
+            if (usersDTO.getFullName() != null) {
+                users.setFullName(usersDTO.getFullName());
+            }
+            if (usersDTO.getBirthDate() != null) {
+                users.setBirthDate(usersDTO.getBirthDate());
+            }
+            if (usersDTO.getAddress() != null) {
+                users.setAddress(usersDTO.getAddress());
+            }
+            if (usersDTO.getPassword() != null) {
+                users.setPassword(encoder.encode(usersDTO.getPassword()));
             }
 
-            users.setPhone(usersDTO.getPhone());
-            usersReponsitory.save(users);
+            if (usersDTO.getPhone() != null) {
+                users.setPhone(usersDTO.getPhone());
+            }
+            usersRepository.save(users);
 
             return users;
         }
@@ -94,27 +102,32 @@ public class UserServiceImlp implements UserService {
 
     @Override
     public void deleteById(Long id) {
-        usersReponsitory.deleteById(id);
+        usersRepository.deleteById(id);
     }
 
     @Override
     public Users save(Users users) {
-        return usersReponsitory.save(users);
+        return usersRepository.save(users);
     }
 
     @Override
     public Optional<Users> getUserByEmail(String email) {
-        return usersReponsitory.findByEmail(email);
+        return usersRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<Users> getUserById(Long id) {
+        return usersRepository.findById(id);
     }
 
     @Override
     public List<Users> findAllUser() {
-        return usersReponsitory.findAll();
+        return usersRepository.findAll();
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return usersReponsitory.existsByEmail(email);
+        return usersRepository.existsByEmail(email);
     }
 
     // Send email
@@ -137,9 +150,11 @@ public class UserServiceImlp implements UserService {
 
     }
 
-
-
-
-
+    public Optional<Users> getUserFromRequest(HttpServletRequest request) {
+        String token = jwtService.getTokenFromRequest(request);
+        String email = jwtService.extractEmail(token);
+        Optional<Users> optionalUser = getUserByEmail(email);
+        return optionalUser;
+    }
 
 }
