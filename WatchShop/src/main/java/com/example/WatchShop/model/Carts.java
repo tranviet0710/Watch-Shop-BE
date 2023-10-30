@@ -18,7 +18,6 @@ public class Carts {
     private long id;
     private long quantity;
 
-
     @OneToOne
     @JoinColumn(name = "User_id")
     private Users users;
