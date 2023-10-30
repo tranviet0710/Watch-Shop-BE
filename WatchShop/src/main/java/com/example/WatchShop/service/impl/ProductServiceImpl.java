@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductImpl implements ProductService {
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
@@ -39,5 +39,10 @@ public class ProductImpl implements ProductService {
     @Override
     public Products save(Products products) {
         return productRepository.save(products);
+    }
+
+    @Override
+    public List<Products> getProductsByBrand(Long brandId) {
+        return productRepository.findAllByBrandsId(brandId);
     }
 }

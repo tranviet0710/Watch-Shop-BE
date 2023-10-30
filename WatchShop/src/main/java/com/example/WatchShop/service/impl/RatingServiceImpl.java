@@ -6,6 +6,8 @@ import com.example.WatchShop.service.i_service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Collectors;
+
 @Service
 public class RatingServiceImpl implements RatingService {
 
@@ -20,6 +22,12 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public Rating getRatingByUserIdAndProductId(Long idUser, Long idProduct) {
         return ratingRepository.findByUsersIdAndProductsId(idUser, idProduct);
+    }
+
+    @Override
+    public Double getStarOfProduct(Long idProduct) {
+        return ratingRepository.findAll().stream().filter(r -> r.getProducts().getId() == idProduct)
+                .map(Rating::getStar).collect(Collectors.averagingDouble(Double::doubleValue));
     }
 
     @Override

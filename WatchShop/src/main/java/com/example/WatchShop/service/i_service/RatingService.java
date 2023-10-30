@@ -7,6 +7,8 @@ public interface RatingService {
 
     Rating getRatingByUserIdAndProductId(Long idUser, Long idProduct);
 
+    Double getStarOfProduct(Long idProduct);
+
     Rating updateRating(Rating rating);
 
     void deleteRating(Long id);

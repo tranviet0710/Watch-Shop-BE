@@ -2,9 +2,11 @@ package com.example.WatchShop.controller.product;
 
 import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
+import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
 import com.example.WatchShop.model.dto.res.ProductResDTO;
 import com.example.WatchShop.repository.ImageRepository;
-import com.example.WatchShop.service.impl.ProductImpl;
+import com.example.WatchShop.service.i_service.ProductService;
+import com.example.WatchShop.service.i_service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,38 +25,51 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
-    private ProductImpl product;
+    private ProductService productService;
 
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private RatingService ratingService;
+
     //Lấy danh sách của product
     @GetMapping("/")
-    ResponseEntity<?> getAllProduct() {
-        List<Products> products = product.findAllProduct();
-        List<ProductResDTO> productResDTOS = products.stream().map(ProductResDTO::new).toList();
+    ResponseEntity<?> getAllProduct(@RequestParam(value = "brandId", required = false) Long brandID) {
+        List<Products> products = productService.findAllProduct();
+        if(brandID != null){
+            products = products.stream().filter(x->x.getBrands().getId().equals(brandID)).toList();
+        }
+        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productResDTOS));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
     }
 
     @GetMapping("/top5")
     ResponseEntity<?> getTop5Product() {
-        List<Products> products = product.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
+        List<Products> products = productService.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
                 sorted(Comparator.comparing(Products::getSoldQuantity)).limit(5).toList();
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
         }
-        List<ProductResDTO> productResDTOS = products.stream().map(ProductResDTO::new).toList();
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productResDTOS));
+        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
     }
 
-    //lấy product theo id (detail)
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
-        Optional<Products> products = product.getProductById(id);
-        return ResponseEntity.ok(new ProductResDTO(products.get()));
+        Optional<Products> products = productService.getProductById(id);
+        ProductDetailResDTO productDetailResDTO = new ProductDetailResDTO(products.get());
+        List<Products> getSameBrandProducts = productService.getProductsByBrand(productDetailResDTO.getBrandID());
+        List<ProductResDTO> getSameBrandProductsRes =  getSameBrandProducts.stream()
+                .map(ProductResDTO::new)
+                .toList();
+        getSameBrandProductsRes.stream().forEach(p-> p.setStar(ratingService.getStarOfProduct(p.getId())));
+        productDetailResDTO.setSameBrandProducts(getSameBrandProductsRes);
+
+        return ResponseEntity.ok(productDetailResDTO);
     }
 
     @PostMapping("/")
@@ -71,7 +86,7 @@ public class ProductController {
             images.setCreateDate(currentDate);
         }
         products.setCreateDate(currentDate);
-        Products savedProduct = product.save(products);
+        Products savedProduct = productService.save(products);
         if (savedProduct != null) {
             imageRepository.save(images);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product added successfully!"));
@@ -82,12 +97,12 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable("id") Long id, @RequestBody Products updatedProduct) {
-        Optional<Products> optionalProduct = product.getProductById(id);
+        Optional<Products> optionalProduct = productService.getProductById(id);
         if (optionalProduct.isPresent()) {
             Calendar calendar = Calendar.getInstance();
             Date currentDate = new Date(calendar.getTime().getTime());
             updatedProduct.setUpdateDate(currentDate);
-            Products savedProduct = product.save(updatedProduct);
+            Products savedProduct = productService.save(updatedProduct);
             if (savedProduct != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product update successful!"));
             } else {

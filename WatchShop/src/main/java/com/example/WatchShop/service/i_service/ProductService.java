@@ -15,4 +15,5 @@ public interface ProductService {
 
     Products save(Products products);
 
+    List<Products> getProductsByBrand(Long brandId);
 }
