@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Date;
+
 @Entity
 @Getter
 @Setter
@@ -15,7 +17,9 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long quantity;
+    private int quantity;
+    private Date createDate;
+    private Date updateDate;
 
     @ManyToOne
     @JoinColumn(name = "idOrder")

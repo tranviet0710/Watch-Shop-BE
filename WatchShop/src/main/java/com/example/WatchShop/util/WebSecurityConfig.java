@@ -21,7 +21,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorize -> authorize
-//                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                                 .anyRequest().permitAll() //Tat ca request deu phai xac thuc moi
                 )
                 .sessionManagement(sessionManagement ->
