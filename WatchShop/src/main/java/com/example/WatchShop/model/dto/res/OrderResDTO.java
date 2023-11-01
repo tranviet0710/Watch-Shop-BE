@@ -6,6 +6,7 @@ import lombok.Data;
 public class OrderResDTO {
     private long id;
     private String emailUser;
+    private String address;
     private String status;
     private String orderCode;
 

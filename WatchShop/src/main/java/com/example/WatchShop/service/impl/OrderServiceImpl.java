@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -30,8 +31,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Orders getOrderByOrderCode(String orderCode) {
-        return orderRepository.findByOrderCode(orderCode);
+    public Optional<Orders> getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
+
+
 
 }

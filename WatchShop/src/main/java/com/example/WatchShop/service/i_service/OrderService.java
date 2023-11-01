@@ -1,10 +1,9 @@
 package com.example.WatchShop.service.i_service;
 
-import com.example.WatchShop.model.Carts;
-import com.example.WatchShop.model.OrderDetail;
 import com.example.WatchShop.model.Orders;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderService {
 
@@ -14,6 +13,6 @@ public interface OrderService {
 
     public Orders save(Orders orders);
 
-    public Orders getOrderByOrderCode(String orderCode);
+    public Optional<Orders> getOrderById(Long id);
 
 }

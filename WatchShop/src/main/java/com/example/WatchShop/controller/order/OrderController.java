@@ -47,6 +47,7 @@ public class OrderController {
             OrderResDTO orderResDTO = new OrderResDTO();
             orderResDTO.setId(orders.getId());
             orderResDTO.setEmailUser(user.getEmail());
+            orderResDTO.setAddress(user.getAddress());
             orderResDTO.setStatus(orders.getStatus());
             orderResDTO.setTotalAmount(orders.getTotal());
             orderResDTO.setOrderCode(orders.getOrderCode());
@@ -60,13 +61,11 @@ public class OrderController {
     @GetMapping("/order-detail")
     public ResponseEntity<?> getCarts(HttpServletRequest request) {
         Users user = userService.getUserFromRequest(request).get();
-        System.err.println(user + "Users");
+
         if (user != null) {
             Orders orders = orderService.getOrderByUserId(user.getId());
-            System.err.println(orders + "orders");
+            System.err.println(orders + "ordersDetal");
             List<OrderDetailResDTO> orderResDTOS = orders.getOrderDetails().stream().map(OrderDetailResDTO::new).toList();
-
-            System.err.println(orderResDTOS + "orderResDTOS");
             if (orders != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTOS));
             }
@@ -108,14 +107,15 @@ public class OrderController {
 
     @PutMapping("/")
     public ResponseEntity<?> updateOrder(@RequestBody OrderReqDTO orderReqDTO) {
-            Orders orders = orderService.getOrderByOrderCode(orderReqDTO.getOrderCode());
-            if (orders != null) {
-                orders.setStatus(orderReqDTO.getStatus());
-                orderService.save(orders);
-                return ResponseEntity.status(HttpStatus.OK).body("Update Status Successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No OrderCode");
-            }
+        Optional<Orders> orderOptional = orderService.getOrderById(orderReqDTO.getOrderId());
+        if (orderOptional.isPresent()) {
+            Orders orders = orderOptional.get();
+            orders.setStatus(orderReqDTO.getStatus());
+            orderService.save(orders);
+            return ResponseEntity.status(HttpStatus.OK).body("Update Status Successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Order found with the given OrderId.");
+        }
     }
 
 
