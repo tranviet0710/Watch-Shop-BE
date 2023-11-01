@@ -83,13 +83,14 @@ public class UsersController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUser() {
         List<Users> usersList = userService.findAllUser();
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", usersList));
+        List<UserResDTO> userResDTOS = usersList.stream().map(UserResDTO::new).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", userResDTOS));
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserDetail(@PathVariable("id") Long id) {
         Users user = userService.getUserById(id).get();
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", user));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new UserResDTO(user)));
     }
 
     @PutMapping("/users/{id}")

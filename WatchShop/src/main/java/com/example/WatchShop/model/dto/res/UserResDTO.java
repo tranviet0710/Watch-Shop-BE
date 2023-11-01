@@ -1,5 +1,6 @@
 package com.example.WatchShop.model.dto.res;
 
+import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class UserResDTO {
     private String address;
     private String email;
     private String phone;
+    private String roles;
 
     public UserResDTO(Users users) {
         this.fullName = users.getFullName();
@@ -26,5 +28,6 @@ public class UserResDTO {
         this.address = users.getAddress();
         this.email = users.getEmail();
         this.phone = users.getPhone();
+        this.roles = users.getRoles().getName();
     }
 }
