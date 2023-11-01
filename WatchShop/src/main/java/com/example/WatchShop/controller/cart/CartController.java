@@ -57,7 +57,12 @@ public class CartController {
             CartDetail cartDetail1;
             if(cartDetail.isPresent()) {
                 cartDetail1 = cartDetail.get();
-                cartDetail1.setQuantity(cartDetail1.getQuantity() + 1);
+                if(cartReqDTO.getAmount() != null) {
+                    cartDetail1.setQuantity(cartDetail1.getQuantity() + cartReqDTO.getAmount());
+                }
+                else {
+                    cartDetail1.setQuantity(cartDetail1.getQuantity() + 1);
+                }
             }
             else{
                 Products products = productService.getProductById(cartReqDTO.getProductId()).get();
