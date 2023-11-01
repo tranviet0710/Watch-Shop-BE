@@ -13,7 +13,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductReqDTO {
-    private long id;
+    private Long id;
     private String name;
     private Double price;
     private Double discount;

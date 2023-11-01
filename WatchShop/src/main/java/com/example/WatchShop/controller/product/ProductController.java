@@ -9,6 +9,7 @@ import com.example.WatchShop.repository.ImageRepository;
 import com.example.WatchShop.service.i_service.ProductService;
 import com.example.WatchShop.service.i_service.RatingService;
 import com.example.WatchShop.service.impl.ProductServiceImpl;
+import com.example.WatchShop.service.impl.RatingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +31,7 @@ public class ProductController {
     private ProductServiceImpl productService;
 
     @Autowired
-    private ImageRepository imageRepository;
-
-    @Autowired
-    private RatingService ratingService;
+    private RatingServiceImpl ratingService;
 
     //Lấy danh sách của product
     @GetMapping("/")
@@ -77,16 +75,17 @@ public class ProductController {
     @PostMapping("/")
     public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products){
         Products products1 = productService.save(products);
-
+        if (products1==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(products1);
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@ModelAttribute ProductReqDTO products,@PathVariable("id") Long id){
-        Optional<Products> products2 = productService.getProductById(id);
-        if (products2.isPresent()){
+        Products products1 = productService.save(products);
+        if (products1==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        Products products1 = productService.save(products);
 
         return ResponseEntity.status(HttpStatus.OK).body(products1);
     }

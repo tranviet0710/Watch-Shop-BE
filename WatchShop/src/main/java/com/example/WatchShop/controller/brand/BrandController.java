@@ -19,6 +19,7 @@ public class BrandController {
 
     @Autowired
     private BrandServiceImpl brandService;
+
     Calendar calendar = Calendar.getInstance();
     Date currentDate = new Date(calendar.getTime().getTime());
 
