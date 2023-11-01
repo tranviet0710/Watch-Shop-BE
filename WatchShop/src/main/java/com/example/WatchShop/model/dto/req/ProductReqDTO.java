@@ -1,24 +1,19 @@
-package com.example.WatchShop.model;
+package com.example.WatchShop.model.dto.req;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
-import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Products {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class ProductReqDTO {
+    private Long id;
     private String name;
     private Double price;
     private Double discount;
@@ -38,17 +33,7 @@ public class Products {
     private Date createDate;
     private Date updateDate;
 
-    @ManyToOne
-    @JoinColumn(name = "idBrand")
-    private Brands brands;
+    private Long idBrand;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.EAGER)
-    private Set<Images> images;
-
-    @OneToMany(mappedBy = "products")
-    private Set<OrderDetail> orderDetails;
-
-    @OneToMany(mappedBy = "products")
-    private Set<CartDetail> cartDetails;
-
+    private MultipartFile images;
 }
