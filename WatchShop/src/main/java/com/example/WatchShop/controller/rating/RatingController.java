@@ -20,12 +20,12 @@ public class RatingController {
     private RatingServiceImpl ratingService;
 
     @GetMapping("/")
-    ResponseEntity<?> getAllRating(@RequestParam("userId") Long userId, @RequestParam("productId") Long productId) {
+    ResponseEntity<?> getRating(@RequestParam("userId") Long userId, @RequestParam("productId") Long productId) {
         Rating rating = ratingService.getRatingByUserIdAndProductId(userId, productId);
         if (rating != null) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new RatingResDTO(rating)));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "failed", "data", new RatingResDTO()));
     }
 
     @PostMapping("/")

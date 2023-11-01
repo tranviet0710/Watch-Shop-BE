@@ -40,10 +40,10 @@ public class ProductController {
         if(brandID != null){
             products = products.stream().filter(x->x.getBrands().getId().equals(brandID)).toList();
         }
-        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
         if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
         }
+        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
     }
 
@@ -52,7 +52,7 @@ public class ProductController {
         List<Products> products = productService.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
                 sorted(Comparator.comparing(Products::getSoldQuantity)).limit(5).toList();
         if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", null));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
         }
         List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
