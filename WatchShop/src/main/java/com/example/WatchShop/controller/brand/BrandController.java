@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,8 @@ public class BrandController {
 
     @Autowired
     private BrandServiceImpl brandService;
+    Calendar calendar = Calendar.getInstance();
+    Date currentDate = new Date(calendar.getTime().getTime());
 
     @GetMapping("/")
     public ResponseEntity<?> getAllBrand() {
@@ -26,6 +30,7 @@ public class BrandController {
 
     @PostMapping("/")
     public ResponseEntity<?> addBrand(@RequestBody Brands brands) {
+        brands.setCreateDate(currentDate);
         Brands savedBrands = brandService.save(brands);
         if (savedBrands != null) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Brand added successfully!"));
@@ -38,6 +43,7 @@ public class BrandController {
     public ResponseEntity<?> updateBrand(@PathVariable("id") Long id, @RequestBody Brands brands) {
         Brands brands1 = brandService.findById(id);
         brands1.setName(brands.getName());
+        brands1.setUpdateDate(currentDate);
         Brands brands2 = brandService.save(brands1);
         if (brands2 != null) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Brand updated successfully!"));

@@ -1,6 +1,7 @@
 package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Products;
+import com.example.WatchShop.model.dto.req.ProductReqDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,9 @@ public interface ProductService {
 
     List<Products> getTop5Saler();
 
-    Products save(Products products);
+    Products save(ProductReqDTO products);
 
     List<Products> getProductsByBrand(Long brandId);
+
+    Products update(ProductReqDTO products);
 }

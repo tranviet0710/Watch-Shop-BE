@@ -2,11 +2,13 @@ package com.example.WatchShop.controller.product;
 
 import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
+import com.example.WatchShop.model.dto.req.ProductReqDTO;
 import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
 import com.example.WatchShop.model.dto.res.ProductResDTO;
 import com.example.WatchShop.repository.ImageRepository;
 import com.example.WatchShop.service.i_service.ProductService;
 import com.example.WatchShop.service.i_service.RatingService;
+import com.example.WatchShop.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,7 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -73,44 +75,19 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addProduct(@ModelAttribute Products products, @RequestParam("imgFile") MultipartFile imgFile) throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        Date currentDate = new Date(calendar.getTime().getTime());
+    public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products){
+        Products products1 = productService.save(products);
 
-        Images images = new Images();
-        if (!imgFile.isEmpty()) {
-            byte[] bytes = imgFile.getBytes();
-            Path path = Paths.get("src/main/resources/img/" + imgFile.getOriginalFilename());
-            Files.write(path, bytes);
-            images.setSource(imgFile.getOriginalFilename());
-            images.setCreateDate(currentDate);
-        }
-        products.setCreateDate(currentDate);
-        Products savedProduct = productService.save(products);
-        if (savedProduct != null) {
-            imageRepository.save(images);
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product added successfully!"));
-        } else {
-            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Failed to add product!"));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(products1);
     }
-
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable("id") Long id, @RequestBody Products updatedProduct) {
-        Optional<Products> optionalProduct = productService.getProductById(id);
-        if (optionalProduct.isPresent()) {
-            Calendar calendar = Calendar.getInstance();
-            Date currentDate = new Date(calendar.getTime().getTime());
-            updatedProduct.setUpdateDate(currentDate);
-            Products savedProduct = productService.save(updatedProduct);
-            if (savedProduct != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", "Product update successful!"));
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Failed to add product!"));
-            }
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> updateProduct(@ModelAttribute ProductReqDTO products,@PathVariable("id") Long id){
+        Optional<Products> products2 = productService.getProductById(id);
+        if (products2.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-    }
+        Products products1 = productService.save(products);
 
+        return ResponseEntity.status(HttpStatus.OK).body(products1);
+    }
 }
