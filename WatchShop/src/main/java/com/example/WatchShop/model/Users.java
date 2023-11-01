@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +35,9 @@ public class Users implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "idRole")
     private Roles roles;
+
+    @OneToMany(mappedBy = "users")
+    private Set<Orders> orders;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

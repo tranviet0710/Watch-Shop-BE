@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -21,5 +22,10 @@ public class CartServiceImpl implements CartService {
     @Override
     public Carts getCartByUserId(Long id) {
         return cartRepository.findByUsersId(id);
+    }
+
+    @Override
+    public Optional<Carts> getCartById(Long id) {
+        return cartRepository.findById(id);
     }
 }
