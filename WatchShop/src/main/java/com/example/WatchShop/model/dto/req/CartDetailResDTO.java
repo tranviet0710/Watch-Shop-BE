@@ -1,6 +1,7 @@
 package com.example.WatchShop.model.dto.req;
 
 import com.example.WatchShop.model.CartDetail;
+import com.example.WatchShop.model.Products;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class CartDetailResDTO {
     private Date createDate;
     private Date updateDate;
 
-    private String productName;
+    private Products products;
 
     private Long cartId;
     public CartDetailResDTO(CartDetail cartDetail){
@@ -22,7 +23,7 @@ public class CartDetailResDTO {
         this.quantity = cartDetail.getQuantity();
         this.createDate = cartDetail.getCreateDate();
         this.updateDate = cartDetail.getUpdateDate();
-        this.productName = cartDetail.getProducts().getName();
         this.cartId = cartDetail.getCarts().getId();
+        this.products = cartDetail.getProducts();
     }
 }

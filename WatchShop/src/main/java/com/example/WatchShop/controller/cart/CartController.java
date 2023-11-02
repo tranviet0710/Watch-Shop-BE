@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,10 +41,11 @@ public class CartController {
         Users user = userService.getUserFromRequest(request).get();
         if (user != null) {
             Carts c = cartService.getCartByUserId(user.getId());
-            List<CartDetailResDTO> cartDetailResDTOS = c.getCartDetails().stream().map(CartDetailResDTO::new).toList();
             if (c != null) {
+                List<CartDetailResDTO> cartDetailResDTOS = c.getCartDetails().stream().map(CartDetailResDTO::new).toList();
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", cartDetailResDTOS));
             }
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new ArrayList<>()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
@@ -53,18 +55,16 @@ public class CartController {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
         if (user != null) {
             Carts cart = cartService.getCartByUserId(user.getId());
-            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c->c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
             CartDetail cartDetail1;
-            if(cartDetail.isPresent()) {
+            if (cartDetail.isPresent()) {
                 cartDetail1 = cartDetail.get();
-                if(cartReqDTO.getAmount() != null) {
+                if (cartReqDTO.getAmount() != null) {
                     cartDetail1.setQuantity(cartDetail1.getQuantity() + cartReqDTO.getAmount());
-                }
-                else {
+                } else {
                     cartDetail1.setQuantity(cartDetail1.getQuantity() + 1);
                 }
-            }
-            else{
+            } else {
                 Products products = productService.getProductById(cartReqDTO.getProductId()).get();
                 cartDetail1 = new CartDetail();
                 cartDetail1.setCarts(cart);
@@ -82,8 +82,8 @@ public class CartController {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
         if (user != null) {
             Carts cart = cartService.getCartByUserId(user.getId());
-            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c->c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
-            if(cartDetail.isPresent()) {
+            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+            if (cartDetail.isPresent()) {
                 cartDetailService.remove(cartDetail.get());
             }
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
