@@ -35,11 +35,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Products> getProductById(Long id) {
-        Optional<Products> products = productRepository.findById(id);
-        if (products.isPresent()) {
-
-
-        }
         return productRepository.findById(id);
     }
 
@@ -173,5 +168,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Products update(ProductReqDTO products) {
         return null;
+    }
+
+    @Override
+    public boolean removeProduct(Long id) {
+        Optional<Products> optionalProducts = productRepository.findById(id);
+        if (optionalProducts.isEmpty()){
+            return false;
+        }
+        Products products = optionalProducts.get();
+
+        ImageFile.deleteImageFile(products.getImages().stream().findFirst().get().getSource());
+
+        productRepository.deleteById(products.getId());
+        return true;
     }
 }

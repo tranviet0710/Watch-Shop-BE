@@ -12,13 +12,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- * Handle image file class.
- *
- * @author AnhTuan
- * @version 1.0
- * @since 31/07/2023
- */
 @Slf4j
 public final class ImageFile {
     public static final String PATH_IMAGE = "src\\main\\resources\\static\\image\\";
@@ -26,12 +19,6 @@ public final class ImageFile {
 
     private ImageFile() { }
 
-    /**
-     * Save the image.
-     *
-     * @param imageFile need to save
-     * @return file name
-     */
     public static String saveImageFile(MultipartFile imageFile) throws IOException {
         if (imageFile.isEmpty()) {
             return "";
@@ -46,12 +33,6 @@ public final class ImageFile {
         return filename;
     }
 
-    /**
-     * Random file name.
-     *
-     * @param extension of the file
-     * @return file name
-     */
 
     public static String randomFileName(String extension) {
         String randomUUID = UUID.randomUUID().toString().replace("-", "");
@@ -59,12 +40,6 @@ public final class ImageFile {
         return randomUUID + timeStamp + "." + extension;
     }
 
-    /**
-     * Get file extension.
-     *
-     * @param file need to get the file extension
-     * @return file name extension
-     */
     private static String getFileExtension(MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
         return (originalFileName != null && originalFileName.contains("."))
@@ -72,12 +47,6 @@ public final class ImageFile {
                 : "";
     }
 
-    /**
-     * Delete file.
-     *
-     * @param imageName need to delete
-     * @return status of delete
-     */
     public static boolean deleteImageFile(String imageName) {
         Path path = Paths.get(PATH_IMAGE, imageName);
         try {

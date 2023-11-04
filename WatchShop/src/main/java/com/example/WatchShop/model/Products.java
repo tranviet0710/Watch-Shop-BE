@@ -43,14 +43,14 @@ public class Products {
     @JoinColumn(name = "idBrand")
     private Brands brands;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "products", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Set<Images> images;
 
-    @OneToMany(mappedBy = "products")
+    @OneToMany(mappedBy = "products",cascade = CascadeType.ALL)
     @JsonBackReference
     private Set<OrderDetail> orderDetails;
 
-    @OneToMany(mappedBy = "products")
+    @OneToMany(mappedBy = "products",cascade = CascadeType.ALL)
     @JsonBackReference
     private Set<CartDetail> cartDetails;
 
