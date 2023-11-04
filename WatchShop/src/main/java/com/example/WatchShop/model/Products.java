@@ -1,5 +1,6 @@
 package com.example.WatchShop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,9 +47,11 @@ public class Products {
     private Set<Images> images;
 
     @OneToMany(mappedBy = "products")
+    @JsonBackReference
     private Set<OrderDetail> orderDetails;
 
     @OneToMany(mappedBy = "products")
+    @JsonBackReference
     private Set<CartDetail> cartDetails;
 
 }
