@@ -1,26 +1,16 @@
 package com.example.WatchShop.controller.product;
 
-import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.model.dto.req.ProductReqDTO;
 import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
 import com.example.WatchShop.model.dto.res.ProductResDTO;
-import com.example.WatchShop.repository.ImageRepository;
-import com.example.WatchShop.service.i_service.ProductService;
-import com.example.WatchShop.service.i_service.RatingService;
 import com.example.WatchShop.service.impl.ProductServiceImpl;
 import com.example.WatchShop.service.impl.RatingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Date;
 import java.util.*;
 
 @RestController
@@ -74,12 +64,14 @@ public class ProductController {
 
     @PostMapping("/")
     public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products){
+        System.err.println(products);
         Products products1 = productService.save(products);
         if (products1==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         return ResponseEntity.status(HttpStatus.OK).body(products1);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@ModelAttribute ProductReqDTO products,@PathVariable("id") Long id){
         Products products1 = productService.save(products);

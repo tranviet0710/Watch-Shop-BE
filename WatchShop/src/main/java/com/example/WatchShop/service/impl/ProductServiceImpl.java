@@ -103,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
 
             } catch (IOException e) {
                 System.err.println("save file error " + e);
+                e.printStackTrace();
                 return null;
             }
         }

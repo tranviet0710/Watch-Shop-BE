@@ -1,9 +1,6 @@
 package com.example.WatchShop.model.dto.req;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
@@ -12,6 +9,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class ProductReqDTO {
     private Long id;
     private String name;
@@ -36,4 +34,6 @@ public class ProductReqDTO {
     private Long idBrand;
 
     private MultipartFile images;
+
+
 }
