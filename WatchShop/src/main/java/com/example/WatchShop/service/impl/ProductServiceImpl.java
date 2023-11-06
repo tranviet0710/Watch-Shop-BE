@@ -35,11 +35,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Products> getProductById(Long id) {
-        Optional<Products> products = productRepository.findById(id);
-        if (products.isPresent()) {
-
-
-        }
         return productRepository.findById(id);
     }
 
@@ -137,30 +132,26 @@ public class ProductServiceImpl implements ProductService {
                 images.setSource(fileName);
                 images.setUpdateDate(currentDate);
                 //update image vao data
-
                 oldProduct.setImages(new HashSet<>(Collections.singleton(images)));
-
-                //---
-
-                oldProduct.setName(products.getName());
-                oldProduct.setPrice(products.getPrice());
-                oldProduct.setDescription(products.getDescription());
-                oldProduct.setDiscount(products.getDiscount());
-                oldProduct.setQuantity(products.getQuantity());
-                oldProduct.setSoldQuantity(products.getSoldQuantity());
-                oldProduct.setModel(products.getModel());
-                oldProduct.setColor(products.getColor());
-                oldProduct.setOrigin(products.getOrigin());
-                oldProduct.setWarrantyPeriod(products.getWarrantyPeriod());
-                oldProduct.setScreenSize(products.getScreenSize());
-                oldProduct.setFaceMaterial(products.getFaceMaterial());
-                oldProduct.setFaceSize(products.getFaceSize());
-                oldProduct.setFrameMaterial(products.getFrameMaterial());
-                oldProduct.setWireMaterial(products.getWireMaterial());
-                oldProduct.setProductWeight(products.getProductWeight());
-                oldProduct.setUpdateDate(currentDate);
-                oldProduct.setBrands(brands);
             }
+            oldProduct.setName(products.getName());
+            oldProduct.setPrice(products.getPrice());
+            oldProduct.setDescription(products.getDescription());
+            oldProduct.setDiscount(products.getDiscount());
+            oldProduct.setQuantity(products.getQuantity());
+            oldProduct.setSoldQuantity(products.getSoldQuantity());
+            oldProduct.setModel(products.getModel());
+            oldProduct.setColor(products.getColor());
+            oldProduct.setOrigin(products.getOrigin());
+            oldProduct.setWarrantyPeriod(products.getWarrantyPeriod());
+            oldProduct.setScreenSize(products.getScreenSize());
+            oldProduct.setFaceMaterial(products.getFaceMaterial());
+            oldProduct.setFaceSize(products.getFaceSize());
+            oldProduct.setFrameMaterial(products.getFrameMaterial());
+            oldProduct.setWireMaterial(products.getWireMaterial());
+            oldProduct.setProductWeight(products.getProductWeight());
+            oldProduct.setUpdateDate(currentDate);
+            oldProduct.setBrands(brands);
             Products products1 = productRepository.save(oldProduct);
             return products1;
         }
@@ -174,5 +165,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Products update(ProductReqDTO products) {
         return null;
+    }
+
+    @Override
+    public boolean removeProduct(Long id) {
+        Optional<Products> optionalProducts = productRepository.findById(id);
+        if (optionalProducts.isEmpty()) {
+            return false;
+        }
+        Products products = optionalProducts.get();
+
+        try {
+            ImageFile.deleteImageFile(products.getImages().stream().findFirst().get().getSource());
+        } catch (Exception e) {
+        }
+
+        productRepository.deleteById(products.getId());
+        return true;
     }
 }

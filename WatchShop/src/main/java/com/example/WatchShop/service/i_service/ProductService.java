@@ -19,4 +19,6 @@ public interface ProductService {
     List<Products> getProductsByBrand(Long brandId);
 
     Products update(ProductReqDTO products);
+
+    boolean removeProduct(Long id);
 }
