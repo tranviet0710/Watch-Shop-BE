@@ -75,16 +75,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(products1);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@ModelAttribute ProductReqDTO products, @PathVariable("id") Long id) {
-        Products products1 = productService.save(products);
-        if (products1 == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(products1);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
         if (!productService.removeProduct(id)) {

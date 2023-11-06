@@ -64,7 +64,7 @@ public class OrderController {
 
         if (user != null) {
             Orders orders = orderService.getOrderByUserId(user.getId());
-            System.err.println(orders + "ordersDetal");
+            System.err.println(orders + "ordersDetail");
             List<OrderDetailResDTO> orderResDTOS = orders.getOrderDetails().stream().map(OrderDetailResDTO::new).toList();
             if (orders != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTOS));
