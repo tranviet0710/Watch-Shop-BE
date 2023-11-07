@@ -11,6 +11,4 @@ public class OrderReqDTO {
     private int quantity;
     private Double total;
     private String orderCode;
-
-
 }

@@ -69,7 +69,7 @@ public class CartController {
                 cartDetail1 = new CartDetail();
                 cartDetail1.setCarts(cart);
                 cartDetail1.setProducts(products);
-                cartDetail1.setQuantity(1);
+                cartDetail1.setQuantity(cartReqDTO.getAmount());
             }
             CartDetail savedCartDetail = cartDetailService.save(cartDetail1);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(savedCartDetail)));

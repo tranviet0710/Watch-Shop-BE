@@ -102,8 +102,17 @@ public class UserServiceImlp implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        usersRepository.deleteById(id);
+    public Users deleteById(Long id) {
+        Users users = usersRepository.getById(id);
+        if (users !=null){
+            if (users.isDeleted()){
+                users.setDeleted(false);
+            }else {
+                users.setDeleted(true);
+            }
+            return usersRepository.save(users);
+        }
+        return null;
     }
 
     @Override

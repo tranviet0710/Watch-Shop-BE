@@ -91,7 +91,7 @@ public class OrderController {
             orders.setTotal(orderReqDTO.getTotal());
             orders.setUsers(user);
             Orders orders1 = orderService.save(orders);
-            Set<CartDetail> cartDetails = cart.get().getCartDetails();
+            List<CartDetail> cartDetails = cart.get().getCartDetails();
             OrderDetail orderDetail;
             for(CartDetail cartDetail: cartDetails){
                 orderDetail = new OrderDetail();
