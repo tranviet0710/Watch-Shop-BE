@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/cart")
+@CrossOrigin(origins = "*")
 public class CartController {
     @Autowired
     private UserService userService;
@@ -85,8 +86,8 @@ public class CartController {
             Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
             if (cartDetail.isPresent()) {
                 cartDetailService.remove(cartDetail.get());
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
