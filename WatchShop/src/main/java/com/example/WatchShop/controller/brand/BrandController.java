@@ -18,11 +18,10 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class BrandController {
 
-    @Autowired
-    private BrandServiceImpl brandService;
-
     Calendar calendar = Calendar.getInstance();
     Date currentDate = new Date(calendar.getTime().getTime());
+    @Autowired
+    private BrandServiceImpl brandService;
 
     @GetMapping("/")
     public ResponseEntity<?> getAllBrand() {

@@ -44,7 +44,7 @@ public class UsersController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersReqDTO usersDTO) {
         Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
-        if (user == null || user.get().isDeleted()) {
+        if (user == null || user.get().getIsDeleted()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "fail", "message", "Invalid email or password!"));
         }
         // Generate access token
@@ -55,7 +55,7 @@ public class UsersController {
     @PostMapping("/forgot-password")
     public ResponseEntity<Object> forgotPassword(@RequestBody Map<String, String> email) throws MessagingException {
         Optional<Users> user = userService.getUserByEmail(email.get("email"));
-        if (user.isPresent() || !user.get().isDeleted()) {
+        if (user.isPresent() || !user.get().getIsDeleted()) {
             String password = PasswordUtils.generateRandomPassword(12);
             user.get().setPassword(passwordEncoder.encode(password));
             userService.save(user.get());
@@ -104,9 +104,9 @@ public class UsersController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         Users users = userService.deleteById(id);
-        if (users == null){
+        if (users == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("status", "fail", "message", "Users delete failed"));
-        }else {
+        } else {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "Users delete successfully"));
 
         }

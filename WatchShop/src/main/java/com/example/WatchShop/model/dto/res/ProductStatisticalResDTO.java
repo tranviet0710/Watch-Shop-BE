@@ -10,7 +10,7 @@ public class ProductStatisticalResDTO {
     private String productName;
     private Integer quantitySold;
 
-    public ProductStatisticalResDTO(Products products){
+    public ProductStatisticalResDTO(Products products) {
         this.productName = products.getName();
         this.quantitySold = products.getSoldQuantity();
     }
