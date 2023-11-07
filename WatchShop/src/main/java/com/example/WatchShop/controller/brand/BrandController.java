@@ -1,6 +1,7 @@
 package com.example.WatchShop.controller.brand;
 
 import com.example.WatchShop.model.Brands;
+import com.example.WatchShop.model.dto.req.BrandReqDTO;
 import com.example.WatchShop.service.impl.BrandServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,9 @@ public class BrandController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addBrand(@RequestBody Brands brands) {
+    public ResponseEntity<?> addBrand(@RequestBody BrandReqDTO brand) {
+        Brands brands = new Brands();
+        brands.setName(brand.getName());
         brands.setCreateDate(currentDate);
         Brands savedBrands = brandService.save(brands);
         if (savedBrands != null) {
