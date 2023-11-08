@@ -17,10 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/cart")
@@ -42,7 +39,15 @@ public class CartController {
         if (user != null) {
             Carts c = cartService.getCartByUserId(user.getId());
             if (c != null) {
-                List<CartDetailResDTO> cartDetailResDTOS = c.getCartDetails().stream().map(CartDetailResDTO::new).toList();
+                Iterator<CartDetail> iteratorCartDetailIterator = c.getCartDetails().iterator();
+                List<CartDetailResDTO> cartDetailResDTOS = new ArrayList<>();
+                CartDetailResDTO dto = null;
+
+                while (iteratorCartDetailIterator.hasNext()) {
+                    CartDetail cartDetail = iteratorCartDetailIterator.next();
+                    dto = new CartDetailResDTO(cartDetail);
+                    cartDetailResDTOS.add(dto);
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", cartDetailResDTOS));
             }
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new ArrayList<>()));
@@ -55,7 +60,10 @@ public class CartController {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
         if (user != null) {
             Carts cart = cartService.getCartByUserId(user.getId());
-            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+            Optional<CartDetail> cartDetail = cart.getCartDetails()
+                    .stream()
+                    .filter(c -> c.getProducts().getId() == cartReqDTO.getProductId())
+                    .findFirst();
             CartDetail cartDetail1;
             if (cartDetail.isPresent()) {
                 cartDetail1 = cartDetail.get();
