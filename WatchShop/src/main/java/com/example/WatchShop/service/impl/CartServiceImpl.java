@@ -28,4 +28,9 @@ public class CartServiceImpl implements CartService {
     public Optional<Carts> getCartById(Long id) {
         return cartRepository.findById(id);
     }
+
+    @Override
+    public Carts save(Carts carts) {
+        return cartRepository.save(carts);
+    }
 }

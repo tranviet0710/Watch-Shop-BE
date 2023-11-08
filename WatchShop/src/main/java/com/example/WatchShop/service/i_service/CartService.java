@@ -12,4 +12,6 @@ public interface CartService {
 
     public Optional<Carts> getCartById(Long id);
 
+    Carts save(Carts carts);
+
 }
