@@ -8,5 +8,5 @@ import lombok.Setter;
 public class CartReqDTO {
     private Long userId;
     private Long productId;
-    private Integer amount;
+    private Integer amount =1;
 }
