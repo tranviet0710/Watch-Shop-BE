@@ -37,6 +37,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
         }
         List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
+        productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
     }
 
