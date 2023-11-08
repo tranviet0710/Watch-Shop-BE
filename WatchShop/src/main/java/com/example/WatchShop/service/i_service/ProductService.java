@@ -16,6 +16,8 @@ public interface ProductService {
 
     Products save(ProductReqDTO products);
 
+    Products save(Products products);
+
     List<Products> getProductsByBrand(Long brandId);
 
     Products update(ProductReqDTO products);

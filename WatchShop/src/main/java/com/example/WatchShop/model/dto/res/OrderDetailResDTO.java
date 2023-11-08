@@ -13,19 +13,7 @@ import java.sql.Date;
 public class OrderDetailResDTO {
     private long id;
     private int quantity;
-    private Date createDate;
-    private Date updateDate;
-
     private String productName;
+    private double price;
 
-    private Long orderId;
-
-    public OrderDetailResDTO(OrderDetail orderDetail) {
-        this.id = orderDetail.getId();
-        this.quantity = orderDetail.getQuantity();
-        this.createDate = orderDetail.getCreateDate();
-        this.updateDate = orderDetail.getUpdateDate();
-        this.productName = orderDetail.getProducts().getName();
-        this.orderId = orderDetail.getOrders().getId();
-    }
 }
