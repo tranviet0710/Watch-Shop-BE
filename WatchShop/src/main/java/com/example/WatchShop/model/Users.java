@@ -35,7 +35,7 @@ public class Users implements UserDetails {
     private String email;
     private String phone;
     @Column(nullable = true)
-    private boolean isDeleted = false;
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "idRole")

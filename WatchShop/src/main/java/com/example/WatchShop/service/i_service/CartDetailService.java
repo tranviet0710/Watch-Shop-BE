@@ -8,5 +8,6 @@ public interface CartDetailService {
     public List<CartDetail> getAllCartDetails();
 
     CartDetail save(CartDetail cartDetail);
+
     void remove(CartDetail cartDetail);
 }

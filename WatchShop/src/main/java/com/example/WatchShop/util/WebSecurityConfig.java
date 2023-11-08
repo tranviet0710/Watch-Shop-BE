@@ -22,7 +22,7 @@ public class WebSecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers("/**").permitAll()
-                                .anyRequest().permitAll() //Tat ca request deu phai xac thuc moi
+                        .anyRequest().permitAll() //Tat ca request deu phai xac thuc moi
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
