@@ -22,7 +22,7 @@ public interface UserService {
 
     Users updateUsers(UsersReqDTO usersDTO, Long id);
 
-    void deleteById(Long id);
+    Users deleteById(Long id);
 
     Users save(Users users);
 

@@ -21,7 +21,7 @@ public class ProductResDTO {
     private Double star;
     private Set<String> imageSource;
 
-    public ProductResDTO(Products product){
+    public ProductResDTO(Products product) {
         this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();

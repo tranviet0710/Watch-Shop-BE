@@ -21,6 +21,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("api/cart")
+@CrossOrigin(origins = "*")
 public class CartController {
     @Autowired
     private UserService userService;
@@ -77,7 +78,7 @@ public class CartController {
                 cartDetail1 = new CartDetail();
                 cartDetail1.setCarts(cart);
                 cartDetail1.setProducts(products);
-                cartDetail1.setQuantity(1);
+                cartDetail1.setQuantity(cartReqDTO.getAmount());
             }
             CartDetail savedCartDetail = cartDetailService.save(cartDetail1);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(savedCartDetail)));
@@ -93,8 +94,8 @@ public class CartController {
             Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
             if (cartDetail.isPresent()) {
                 cartDetailService.remove(cartDetail.get());
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }

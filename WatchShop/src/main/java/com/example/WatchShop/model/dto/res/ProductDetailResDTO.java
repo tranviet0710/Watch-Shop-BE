@@ -42,7 +42,7 @@ public class ProductDetailResDTO {
     private Set<String> imageSource;
     private List<ProductResDTO> sameBrandProducts;
 
-    public ProductDetailResDTO(Products products){
+    public ProductDetailResDTO(Products products) {
         this.id = products.getId();
         this.name = products.getName();
         this.price = products.getPrice();

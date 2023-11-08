@@ -1,6 +1,5 @@
 package com.example.WatchShop.model.dto.res;
 
-import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

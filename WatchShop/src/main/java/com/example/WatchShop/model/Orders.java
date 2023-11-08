@@ -1,12 +1,11 @@
 package com.example.WatchShop.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -32,5 +31,5 @@ public class Orders {
 
     @OneToMany(mappedBy = "orders")
     @JsonBackReference
-    private Set<OrderDetail> orderDetails;
+    private List<OrderDetail> orderDetails;
 }

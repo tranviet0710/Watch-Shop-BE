@@ -20,7 +20,7 @@ public class RatingResDTO {
     private String userName;
     private String productName;
 
-    public RatingResDTO(Rating rating){
+    public RatingResDTO(Rating rating) {
         this.id = rating.getId();
         this.star = rating.getStar();
         this.createDate = rating.getCreateDate();

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,12 +20,11 @@ public class Carts {
     private long id;
     private long quantity;
 
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private Users users;
 
     @OneToMany(mappedBy = "carts")
     @JsonBackReference
-    private Set<CartDetail> cartDetails;
+    private List<CartDetail> cartDetails;
 }

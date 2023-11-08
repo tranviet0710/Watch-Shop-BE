@@ -1,16 +1,11 @@
 package com.example.WatchShop.controller.order;
 
 import com.example.WatchShop.model.*;
-
-
 import com.example.WatchShop.model.dto.req.OrderReqDTO;
-
 import com.example.WatchShop.model.dto.res.OrderDetailResDTO;
 import com.example.WatchShop.model.dto.res.OrderResDTO;
-
 import com.example.WatchShop.service.i_service.*;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,9 +86,9 @@ public class OrderController {
             orders.setTotal(orderReqDTO.getTotal());
             orders.setUsers(user);
             Orders orders1 = orderService.save(orders);
-            Set<CartDetail> cartDetails = cart.get().getCartDetails();
+            List<CartDetail> cartDetails = cart.get().getCartDetails();
             OrderDetail orderDetail;
-            for(CartDetail cartDetail: cartDetails){
+            for (CartDetail cartDetail : cartDetails) {
                 orderDetail = new OrderDetail();
                 orderDetail.setOrders(orders1);
                 orderDetail.setProducts(cartDetail.getProducts());
@@ -117,13 +112,6 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Order found with the given OrderId.");
         }
     }
-
-
-
-
-
-
-
 
 
 }

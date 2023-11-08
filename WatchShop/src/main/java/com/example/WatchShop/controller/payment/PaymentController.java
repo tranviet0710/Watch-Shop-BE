@@ -6,7 +6,6 @@ import com.example.WatchShop.model.dto.res.PaymentResDTO;
 import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.VnPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

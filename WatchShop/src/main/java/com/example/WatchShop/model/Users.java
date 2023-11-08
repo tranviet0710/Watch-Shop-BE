@@ -34,6 +34,8 @@ public class Users implements UserDetails {
     private String password;
     private String email;
     private String phone;
+    @Column(nullable = true)
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "idRole")

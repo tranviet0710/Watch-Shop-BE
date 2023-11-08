@@ -18,7 +18,8 @@ public class CartDetailResDTO {
     private Products products;
 
     private Long cartId;
-    public CartDetailResDTO(CartDetail cartDetail){
+
+    public CartDetailResDTO(CartDetail cartDetail) {
         this.id = cartDetail.getId();
         this.quantity = cartDetail.getQuantity();
         this.createDate = cartDetail.getCreateDate();

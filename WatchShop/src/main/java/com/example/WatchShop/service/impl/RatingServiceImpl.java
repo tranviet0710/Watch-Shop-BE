@@ -1,7 +1,10 @@
 package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Rating;
+import com.example.WatchShop.model.dto.req.RatingReqDTO;
+import com.example.WatchShop.repository.ProductRepository;
 import com.example.WatchShop.repository.RatingRepository;
+import com.example.WatchShop.repository.UsersRepository;
 import com.example.WatchShop.service.i_service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +16,11 @@ public class RatingServiceImpl implements RatingService {
 
     @Autowired
     private RatingRepository ratingRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private UsersRepository usersRepository;
 
-    @Override
-    public Rating addRating(Rating rating) {
-        return ratingRepository.save(rating);
-    }
 
     @Override
     public Rating getRatingByUserIdAndProductId(Long idUser, Long idProduct) {
@@ -31,12 +34,18 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public Rating updateRating(Rating rating) {
-        return null;
-    }
-
-    @Override
-    public void deleteRating(Long id) {
-
+    public RatingReqDTO rate(RatingReqDTO ratingReqDTO) {
+        Rating rating = ratingRepository.findByUsersIdAndProductsId(ratingReqDTO.getUserID(), ratingReqDTO.getProductID());
+        if(rating != null){
+            rating.setStar(ratingReqDTO.getStar());
+            return new RatingReqDTO(ratingRepository.save(rating));
+        }
+        else{
+            Rating newRating = new Rating();
+            newRating.setUsers(usersRepository.findById(ratingReqDTO.getUserID()).get());
+            newRating.setProducts(productRepository.findById(ratingReqDTO.getProductID()).get());
+            newRating.setStar(ratingReqDTO.getStar());
+            return new RatingReqDTO(ratingRepository.save(newRating));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.WatchShop.model;
 
+import com.example.WatchShop.model.dto.req.RatingReqDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
