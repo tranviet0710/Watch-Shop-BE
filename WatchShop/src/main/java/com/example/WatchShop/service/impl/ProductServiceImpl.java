@@ -146,6 +146,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Products save(Products products) {
+        return productRepository.save(products);
+    }
+
+    @Override
     public List<Products> getProductsByBrand(Long brandId) {
         return productRepository.findAllByBrandsId(brandId);
     }
