@@ -36,7 +36,7 @@ public class ProductDetailResDTO {
     private Double productWeight;
     private Date createDate;
     private Date updateDate;
-
+    private Double star;
     private Long brandID;
 
     private Set<String> imageSource;

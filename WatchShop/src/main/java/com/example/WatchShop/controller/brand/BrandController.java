@@ -43,7 +43,7 @@ public class BrandController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateBrand(@PathVariable("id") Long id, @RequestBody Brands brands) {
+    public ResponseEntity<?> updateBrand(@PathVariable("id") Long id, @RequestBody BrandReqDTO brands) {
         Brands brands1 = brandService.findById(id);
         brands1.setName(brands.getName());
         brands1.setUpdateDate(currentDate);

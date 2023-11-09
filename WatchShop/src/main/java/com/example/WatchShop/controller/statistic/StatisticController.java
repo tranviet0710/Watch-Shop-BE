@@ -7,6 +7,7 @@ import com.example.WatchShop.service.i_service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/statistical")
+@CrossOrigin
 public class StatisticController {
 
     @Autowired
@@ -27,15 +29,19 @@ public class StatisticController {
 
     @GetMapping("/top-5-best-sellers")
     public ResponseEntity<?> get5BestSellers() {
-        List<ProductStatisticalResDTO> bestSellers = productService.findAllProduct().stream()
+        List<ProductStatisticalResDTO> bestSellers = productService.findAllProduct()
+                .stream()
                 .map(ProductStatisticalResDTO::new)
-                .sorted(Comparator.comparing(ProductStatisticalResDTO::getQuantitySold, Comparator.reverseOrder())).limit(5).toList();
+                .sorted(Comparator.comparing(ProductStatisticalResDTO::getQuantitySold, Comparator.reverseOrder()))
+                .limit(5)
+                .toList();
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", bestSellers));
     }
 
     @GetMapping("/top-5-best-customers")
     public ResponseEntity<?> get5BestCustomer() {
         List<UserResDTO> bestCustomers = orderService.get5BestSellers();
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", bestCustomers));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("status", "success", "data", bestCustomers));
     }
 }
