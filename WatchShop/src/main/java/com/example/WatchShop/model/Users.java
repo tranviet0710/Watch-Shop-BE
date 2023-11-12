@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,7 +42,7 @@ public class Users implements UserDetails {
     private Roles roles;
 
     @OneToMany(mappedBy = "users")
-    private Set<Orders> orders;
+    private List<Orders> orders; // to list
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

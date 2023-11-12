@@ -39,7 +39,8 @@ public class ProductDetailResDTO {
     private Double star;
     private Long brandID;
 
-    private Set<String> imageSource;
+    // to list
+    private List<String> imageSource;
     private List<ProductResDTO> sameBrandProducts;
 
     public ProductDetailResDTO(Products products) {
@@ -63,6 +64,6 @@ public class ProductDetailResDTO {
         this.createDate = products.getCreateDate();
         this.updateDate = products.getUpdateDate();
         this.brandID = products.getBrands().getId();
-        this.imageSource = products.getImages().stream().map(Images::getSource).collect(Collectors.toSet());
+        this.imageSource = products.getImages().stream().map(Images::getSource).collect(Collectors.toList());
     }
 }

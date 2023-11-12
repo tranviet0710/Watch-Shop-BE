@@ -1,6 +1,7 @@
 package com.example.WatchShop.service.impl;
 
 import com.example.WatchShop.model.Carts;
+import com.example.WatchShop.model.Users;
 import com.example.WatchShop.repository.CartRepository;
 import com.example.WatchShop.service.i_service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,15 @@ public class CartServiceImpl implements CartService {
     @Override
     public Optional<Carts> getCartById(Long id) {
         return cartRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Carts> getCartByUsers(Users users) {
+        return cartRepository.findByUsers(users);
+    }
+
+    @Override
+    public Carts save(Carts carts) {
+        return cartRepository.save(carts);
     }
 }

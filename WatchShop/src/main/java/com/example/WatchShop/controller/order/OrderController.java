@@ -11,11 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
 @RequestMapping("api/order")
+@CrossOrigin
 public class OrderController {
     @Autowired
     private UserService userService;
@@ -32,13 +32,19 @@ public class OrderController {
     @Autowired
     private CartService cartService;
 
-
     @GetMapping("/")
     public ResponseEntity<?> getOrder(HttpServletRequest request) {
         Users user = userService.getUserFromRequest(request).get();
-        if (user != null) {
-            Orders orders = orderService.getOrderByUserId(user.getId());
-            // Create OrderDTO từ Orders
+        List<Orders> ordersList = null;
+
+        if ("ROLE_USER".equals(user.getRoles().getName())) {
+            ordersList = new ArrayList<>(user.getOrders());
+        } else {
+            ordersList = orderService.getAllOrder();
+        }
+
+        List<OrderResDTO> orderResDTOList = new ArrayList<>();
+        for (Orders orders : ordersList) {
             OrderResDTO orderResDTO = new OrderResDTO();
             orderResDTO.setId(orders.getId());
             orderResDTO.setEmailUser(user.getEmail());
@@ -46,58 +52,81 @@ public class OrderController {
             orderResDTO.setStatus(orders.getStatus());
             orderResDTO.setTotalAmount(orders.getTotal());
             orderResDTO.setOrderCode(orders.getOrderCode());
-
-            // Trả về OrderDTO thay vì Orders
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTO));
+            orderResDTO.setCreateDate(orders.getCreateDate());
+            orderResDTOList.add(orderResDTO);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("status", "success", "data", orderResDTOList));
     }
 
-    @GetMapping("/order-detail")
-    public ResponseEntity<?> getCarts(HttpServletRequest request) {
-        Users user = userService.getUserFromRequest(request).get();
+    @GetMapping("/order-detail/{id}")
+    public ResponseEntity<?> getOrderDetailByOrderId(@PathVariable("id") Long id) {
+        Optional<Orders> ordersOptional = orderService.getOrderById(id);
 
-        if (user != null) {
-            Orders orders = orderService.getOrderByUserId(user.getId());
-            System.err.println(orders + "ordersDetail");
-            List<OrderDetailResDTO> orderResDTOS = orders.getOrderDetails().stream().map(OrderDetailResDTO::new).toList();
-            if (orders != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTOS));
+        if (ordersOptional.isPresent()) {
+            Orders orders = ordersOptional.get();
+            List<OrderDetail> orderDetails = orders.getOrderDetails();
+            List<OrderDetailResDTO> orderDetailResDTOList = new ArrayList<>();
+            for (OrderDetail orderDetail : orderDetails) {
+                OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
+                orderDetailResDTO.setId(orderDetail.getId());
+                orderDetailResDTO.setQuantity(orderDetail.getQuantity());
+                orderDetailResDTO.setProductName(orderDetail.getProducts().getName());
+                orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
+                orderDetailResDTO.setCreateDate(orderDetail.getCreateDate());
+                orderDetailResDTOList.add(orderDetailResDTO);
             }
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(Map.of("status", "success", "data", orderDetailResDTOList));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("/")
     public ResponseEntity<?> addToOrder(@RequestBody OrderReqDTO orderReqDTO) {
         Users user = userService.getUserById(orderReqDTO.getUserId()).get();
-        if (user != null) {
-            Optional<Carts> cart = cartService.getCartById(user.getId());
-            // tao order tu cart
-            Orders orders = new Orders();
-            orders.setDate(new java.sql.Date(new Date().getTime()));
+        Optional<Carts> cart = cartService.getCartByUsers(user);
+        // tao order tu cart
+        Orders orders = new Orders();
+        orders.setDate(new java.sql.Date(new Date().getTime()));
 
-            // Create HD + Date
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyyHHmmss");
-            String formattedDate = dateFormat.format(calendar.getTime());
-            orders.setOrderCode("HD" + formattedDate);
-            orders.setStatus(orderReqDTO.getStatus());
-            orders.setTotal(orderReqDTO.getTotal());
-            orders.setUsers(user);
-            Orders orders1 = orderService.save(orders);
-            List<CartDetail> cartDetails = cart.get().getCartDetails();
-            OrderDetail orderDetail;
-            for (CartDetail cartDetail : cartDetails) {
-                orderDetail = new OrderDetail();
-                orderDetail.setOrders(orders1);
-                orderDetail.setProducts(cartDetail.getProducts());
-                orderDetail.setQuantity(cartDetail.getQuantity());
-                orderDetailService.save(orderDetail);
-            }
-            return ResponseEntity.status(HttpStatus.OK).body("Insert Successfuly");
+        // Create HD + Date
+        orders.setOrderCode("HD" + Calendar.getInstance().getTime());
+        orders.setStatus(orderReqDTO.getStatus());
+        orders.setTotal(orderReqDTO.getTotal());
+        orders.setUsers(user);
+        Orders orders1 = orderService.save(orders);
+        List<CartDetail> cartDetails = null;
+
+        if (cart.isPresent()) {
+            cartDetails = cart.get().getCartDetails();
+        } else {
+            cartDetails = new ArrayList<>();
         }
-        return ResponseEntity.status(HttpStatus.OK).body("null");
+
+        OrderDetail orderDetail;
+        for (CartDetail cartDetail : cartDetails) {
+            orderDetail = new OrderDetail();
+            orderDetail.setOrders(orders1);
+            orderDetail.setProducts(cartDetail.getProducts());
+            orderDetail.setQuantity(cartDetail.getQuantity());
+            orderDetailService.save(orderDetail);
+            // Tăng quantity soldQuantity
+            Products product = cartDetail.getProducts();
+            int soldQuantity = product.getSoldQuantity() + cartDetail.getQuantity();
+            product.setSoldQuantity(soldQuantity);
+            productService.save(product);
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Insert Successfully");
     }
 
     @PutMapping("/")
@@ -107,11 +136,13 @@ public class OrderController {
             Orders orders = orderOptional.get();
             orders.setStatus(orderReqDTO.getStatus());
             orderService.save(orders);
-            return ResponseEntity.status(HttpStatus.OK).body("Update Status Successfully");
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("Update Status Successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Order found with the given OrderId.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No Order found with the given OrderId.");
         }
     }
-
-
 }

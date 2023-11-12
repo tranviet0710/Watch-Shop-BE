@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,5 +20,5 @@ public class Roles {
     private String name;
 
     @OneToMany(mappedBy = "roles")
-    private Set<Users> users;
+    private List<Users> users; // to list
 }

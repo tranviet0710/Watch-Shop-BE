@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,13 @@ public class ProductResDTO {
     private String name;
     private Double price;
     private Double star;
-    private Set<String> imageSource;
+    // set -> list
+    private List<String> imageSource;
 
     public ProductResDTO(Products product) {
         this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();
-        this.imageSource = product.getImages().stream().map(Images::getSource).collect(Collectors.toSet());
+        this.imageSource = product.getImages().stream().map(Images::getSource).collect(Collectors.toList());
     }
 }

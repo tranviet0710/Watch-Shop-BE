@@ -44,11 +44,12 @@ public class ProductController {
     @GetMapping("/top5")
     ResponseEntity<?> getTop5Product() {
         List<Products> products = productService.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
-                sorted(Comparator.comparing(Products::getSoldQuantity)).limit(5).toList();
+                sorted(Comparator.comparing(Products::getSoldQuantity, Comparator.reverseOrder())).limit(5).toList();
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
         }
         List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
+        productDetailResDTOS.stream().forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
     }
 

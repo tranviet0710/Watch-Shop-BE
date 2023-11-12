@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    public List<Orders> getAllOrder();
+     List<Orders> getAllOrder();
 
-    public Orders getOrderByUserId(Long id);
+     Orders getOrderByUserId(Long id);
 
-    public Orders save(Orders orders);
+     Orders save(Orders orders);
 
-    public Optional<Orders> getOrderById(Long id);
+     Optional<Orders> getOrderById(Long id);
 
-    public List<UserResDTO> get5BestSellers();
+     List<UserResDTO> get5BestSellers();
 }

@@ -19,14 +19,15 @@ import java.util.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/vnpay")
+@RequestMapping("api/vn-pay")
 public class PaymentController {
 
     @Autowired
     private UserService userService;
 
     @PostMapping("/create-payment")
-    public ResponseEntity<Object> createPayment(HttpServletRequest request, @RequestBody PaymentReqDTO paymentReqDTO) throws UnsupportedEncodingException {
+    public ResponseEntity<Object> createPayment(HttpServletRequest request, @RequestBody PaymentReqDTO paymentReqDTO)
+            throws UnsupportedEncodingException {
         Users user = userService.getUserFromRequest(request).get();
         long amount = paymentReqDTO.getTotal() * 100;
         String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
@@ -44,7 +45,7 @@ public class PaymentController {
         vnp_Params.put("vnp_OrderInfo", user.getEmail() + "," + 1);
         vnp_Params.put("vnp_OrderType", "order");
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VnPayConfig.vnp_Returnurl);
+        vnp_Params.put("vnp_ReturnUrl", paymentReqDTO.getUrlReturn());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -56,23 +57,24 @@ public class PaymentController {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
+        Iterator<String> itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 //Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 //Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');

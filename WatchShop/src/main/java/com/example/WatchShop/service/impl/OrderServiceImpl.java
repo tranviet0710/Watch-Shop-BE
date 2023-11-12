@@ -51,9 +51,9 @@ public class OrderServiceImpl implements OrderService {
         Map<Long, Double> totalMoneyPaidByUser = new HashMap<>();
         Double totalMoney;
         Long userID;
-        for (int i = 0; i < allOrders.size(); i++) {
-            userID = allOrders.get(i).getUsers().getId();
-            orderDetails = allOrders.get(i).getOrderDetails();
+        for (Orders allOrder : allOrders) {
+            userID = allOrder.getUsers().getId();
+            orderDetails = allOrder.getOrderDetails();
             totalMoney = orderDetails.stream().map(x -> x.getProducts().getPrice()).mapToDouble(Double::doubleValue).sum();
             if (totalMoneyPaidByUser.containsKey(userID)) {
                 Double paidMoney = totalMoneyPaidByUser.get(userID);
@@ -66,9 +66,13 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .sorted(Map.Entry.comparingByValue())
                 .limit(5)
-                .map(longDoubleEntry -> longDoubleEntry.getKey())
+                .map(Map.Entry::getKey)
+                .toList();
+
+        return userIds.stream()
+                .map(x -> userService.getUserById(x).get())
+                .map(UserResDTO::new)
                 .collect(Collectors.toList());
-        return userIds.stream().map(x -> userService.getUserById(x).get()).map(UserResDTO::new).collect(Collectors.toList());
 
     }
 }

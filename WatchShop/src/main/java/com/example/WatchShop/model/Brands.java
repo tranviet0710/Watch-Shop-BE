@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,5 +25,5 @@ public class Brands {
 
     @OneToMany(mappedBy = "brands")
     @JsonBackReference
-    private Set<Products> products;
+    private List<Products> products; // to list
 }

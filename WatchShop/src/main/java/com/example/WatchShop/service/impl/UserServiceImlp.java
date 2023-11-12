@@ -104,15 +104,8 @@ public class UserServiceImlp implements UserService {
     @Override
     public Users deleteById(Long id) {
         Users users = usersRepository.getById(id);
-        if (users != null) {
-            if (users.getIsDeleted()) {
-                users.setIsDeleted(false);
-            } else {
-                users.setIsDeleted(true);
-            }
-            return usersRepository.save(users);
-        }
-        return null;
+        users.setIsDeleted(!users.getIsDeleted());
+        return usersRepository.save(users);
     }
 
     @Override
@@ -163,8 +156,7 @@ public class UserServiceImlp implements UserService {
     public Optional<Users> getUserFromRequest(HttpServletRequest request) {
         String token = jwtService.getTokenFromRequest(request);
         String email = jwtService.extractEmail(token);
-        Optional<Users> optionalUser = getUserByEmail(email);
-        return optionalUser;
+        return getUserByEmail(email);
     }
 
     public boolean isCorrectPassword(Users user, String currentPassword) {

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,14 +42,14 @@ public class Products {
     private Brands brands;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Images> images;
+    private List<Images> images; // to list
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Set<OrderDetail> orderDetails;
+    private List<OrderDetail> orderDetails;  // to list
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Set<CartDetail> cartDetails;
+    private List<CartDetail> cartDetails;  // to list
 
 }
