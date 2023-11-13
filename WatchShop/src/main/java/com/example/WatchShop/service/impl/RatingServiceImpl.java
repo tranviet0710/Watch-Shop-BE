@@ -36,11 +36,10 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingReqDTO rate(RatingReqDTO ratingReqDTO) {
         Rating rating = ratingRepository.findByUsersIdAndProductsId(ratingReqDTO.getUserID(), ratingReqDTO.getProductID());
-        if(rating != null){
+        if (rating != null) {
             rating.setStar(ratingReqDTO.getStar());
             return new RatingReqDTO(ratingRepository.save(rating));
-        }
-        else{
+        } else {
             Rating newRating = new Rating();
             newRating.setUsers(usersRepository.findById(ratingReqDTO.getUserID()).get());
             newRating.setProducts(productRepository.findById(ratingReqDTO.getProductID()).get());

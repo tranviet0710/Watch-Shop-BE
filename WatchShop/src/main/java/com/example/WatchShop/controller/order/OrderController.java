@@ -47,7 +47,7 @@ public class OrderController {
         for (Orders orders : ordersList) {
             OrderResDTO orderResDTO = new OrderResDTO();
             orderResDTO.setId(orders.getId());
-            orderResDTO.setEmailUser(user.getEmail());
+            orderResDTO.setUsername(user.getUsername());
             orderResDTO.setAddress(user.getAddress());
             orderResDTO.setStatus(orders.getStatus());
             orderResDTO.setTotalAmount(orders.getTotal());
@@ -70,12 +70,7 @@ public class OrderController {
             List<OrderDetail> orderDetails = orders.getOrderDetails();
             List<OrderDetailResDTO> orderDetailResDTOList = new ArrayList<>();
             for (OrderDetail orderDetail : orderDetails) {
-                OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
-                orderDetailResDTO.setId(orderDetail.getId());
-                orderDetailResDTO.setQuantity(orderDetail.getQuantity());
-                orderDetailResDTO.setProductName(orderDetail.getProducts().getName());
-                orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
-                orderDetailResDTO.setCreateDate(orderDetail.getCreateDate());
+                OrderDetailResDTO orderDetailResDTO = getOrderDetailResDTO(orderDetail);
                 orderDetailResDTOList.add(orderDetailResDTO);
             }
 
@@ -89,6 +84,17 @@ public class OrderController {
         }
     }
 
+    private static OrderDetailResDTO getOrderDetailResDTO(OrderDetail orderDetail) {
+        OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
+        orderDetailResDTO.setId(orderDetail.getId());
+        orderDetailResDTO.setQuantity(orderDetail.getQuantity());
+        orderDetailResDTO.setProducts(orderDetail.getProducts());
+        orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
+        orderDetailResDTO.setCreateDate(orderDetail.getCreateDate());
+        orderDetailResDTO.setUserId(orderDetail.getOrders().getUsers().getId());
+        return orderDetailResDTO;
+    }
+
     @PostMapping("/")
     public ResponseEntity<?> addToOrder(@RequestBody OrderReqDTO orderReqDTO) {
         Users user = userService.getUserById(orderReqDTO.getUserId()).get();
@@ -98,10 +104,11 @@ public class OrderController {
         orders.setDate(new java.sql.Date(new Date().getTime()));
 
         // Create HD + Date
-        orders.setOrderCode("HD" + Calendar.getInstance().getTime());
+        orders.setOrderCode("HD" + new Date().getTime());
         orders.setStatus(orderReqDTO.getStatus());
         orders.setTotal(orderReqDTO.getTotal());
         orders.setUsers(user);
+        orders.setCreateDate(new java.sql.Date(new Date().getTime()));
         Orders orders1 = orderService.save(orders);
         List<CartDetail> cartDetails = null;
 
@@ -118,12 +125,13 @@ public class OrderController {
             orderDetail.setProducts(cartDetail.getProducts());
             orderDetail.setQuantity(cartDetail.getQuantity());
             orderDetailService.save(orderDetail);
-            // Tăng quantity soldQuantity
+            // Tăng soldQuantity và giảm quantity của sản phẩm
             Products product = cartDetail.getProducts();
-            int soldQuantity = product.getSoldQuantity() + cartDetail.getQuantity();
-            product.setSoldQuantity(soldQuantity);
+            product.setSoldQuantity(product.getSoldQuantity() + cartDetail.getQuantity());
+            product.setQuantity(product.getQuantity() - cartDetail.getQuantity());
             productService.save(product);
         }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Insert Successfully");

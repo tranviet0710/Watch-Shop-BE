@@ -9,10 +9,10 @@ import com.example.WatchShop.service.i_service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.YearMonth;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,5 +74,32 @@ public class OrderServiceImpl implements OrderService {
                 .map(UserResDTO::new)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public List<Double> statisticalByMonthAndYear(int month, int year) {
+        int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+        List<Double> response3Forms = new ArrayList<>();
+        List<Map<String, Object>> results = orderRepository.statistical(year, month);
+
+        // create days of the month
+        for (int i = 0; i < daysInMonth; i++) {
+            response3Forms.add(0.0);
+        }
+
+        for (Map<String, Object> result : results) {
+            Date orderDate = (Date) result.get("create_date");
+            double total = (double) result.get("total");
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(orderDate);
+
+            int date = calendar.get(Calendar.DAY_OF_MONTH);
+            int index = date - 1;
+            double newTotalPrice = response3Forms.get(index) + total;
+            response3Forms.set(index, newTotalPrice);
+        }
+
+        return response3Forms;
     }
 }

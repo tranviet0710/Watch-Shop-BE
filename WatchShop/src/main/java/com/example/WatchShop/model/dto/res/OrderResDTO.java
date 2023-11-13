@@ -7,7 +7,7 @@ import java.sql.Date;
 @Data
 public class OrderResDTO {
     private long id;
-    private String emailUser;
+    private String username;
     private String address;
     private String status;
     private String orderCode;

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.function.Predicate;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -35,21 +35,30 @@ public class UsersController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UsersReqDTO usersDTO) {
         if (userService.existsByEmail(usersDTO.getEmail())) {
-            return ResponseEntity.badRequest().body(Map.of("status", "fail", "message", "Email already existed!"));
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("status", "fail", "message", "Email already existed!"));
         }
         userService.addUsers(usersDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "message", "User register successfully."));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("status", "success", "message", "User register successfully."));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UsersReqDTO usersDTO) {
         Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
-        if (user == null || user.get().getIsDeleted()) {
+        if (user.isEmpty() || user.get().getIsDeleted()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "fail", "message", "Invalid email or password!"));
         }
         // Generate access token
         String accessToken = jwtService.generateToken(user.get(), user.get().getAuthorities());
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new UserResDTO(user.get()), "accessToken", accessToken, "userID", user.get().getId()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("status", "success",
+                        "data", new UserResDTO(user.get()),
+                        "accessToken", accessToken,
+                        "userID", user.get().getId(),
+                        "isDeleted", user.get().getIsDeleted()));
     }
 
     @PostMapping("/forgot-password")
@@ -82,8 +91,13 @@ public class UsersController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUser() {
         List<Users> usersList = userService.findAllUser();
-        List<UserResDTO> userResDTOS = usersList.stream().map(UserResDTO::new).toList();
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", userResDTOS));
+        List<UserResDTO> userResDTOS = usersList.stream()
+                .filter(users -> users.getRoles().getName().equals("ROLE_USER"))
+                .map(UserResDTO::new)
+                .toList();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("status", "success", "data", userResDTOS));
     }
 
     @GetMapping("/users/{id}")

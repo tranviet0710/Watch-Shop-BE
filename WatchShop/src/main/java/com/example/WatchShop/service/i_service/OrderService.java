@@ -17,4 +17,6 @@ public interface OrderService {
      Optional<Orders> getOrderById(Long id);
 
      List<UserResDTO> get5BestSellers();
+
+    List<Double> statisticalByMonthAndYear(int month, int year);
 }
