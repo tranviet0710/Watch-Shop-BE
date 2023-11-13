@@ -23,11 +23,11 @@ public class Rating {
     private Date createDate;
     private Date updateDate;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "idUser")
     private Users users;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "idProduct")
     private Products products;
 }
