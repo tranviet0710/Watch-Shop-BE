@@ -14,19 +14,23 @@ import java.sql.Date;
 @Setter
 public class UserResDTO {
 
+    private Long id;
     private String fullName;
     private Date birthDate;
     private String address;
     private String email;
     private String phone;
     private String roles;
+    private boolean isDeleted;
 
     public UserResDTO(Users users) {
+        this.id = users.getId();
         this.fullName = users.getFullName();
         this.birthDate = users.getBirthDate();
         this.address = users.getAddress();
         this.email = users.getEmail();
         this.phone = users.getPhone();
         this.roles = users.getRoles().getName();
+        this.isDeleted = users.getIsDeleted();
     }
 }

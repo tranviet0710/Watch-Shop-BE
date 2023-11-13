@@ -2,6 +2,7 @@ package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.req.UsersReqDTO;
+import com.example.WatchShop.model.dto.res.Response1Form;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -34,4 +35,5 @@ public interface UserService {
 
     public boolean isCorrectPassword(Users user, String currentPassword);
 
+    List<Response1Form> topUserBuyTheMost(int i);
 }

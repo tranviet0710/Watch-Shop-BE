@@ -20,6 +20,7 @@ public class ProductResDTO {
     private String name;
     private Double price;
     private Double star;
+
     private List<String> imageSource;
 
     public ProductResDTO(Products product) {

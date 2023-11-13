@@ -17,10 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/cart")
@@ -43,7 +40,15 @@ public class CartController {
         if (user != null) {
             Carts c = cartService.getCartByUserId(user.getId());
             if (c != null) {
-                List<CartDetailResDTO> cartDetailResDTOS = c.getCartDetails().stream().map(CartDetailResDTO::new).toList();
+                Iterator<CartDetail> iteratorCartDetailIterator = c.getCartDetails().iterator();
+                List<CartDetailResDTO> cartDetailResDTOS = new ArrayList<>();
+                CartDetailResDTO dto = null;
+
+                while (iteratorCartDetailIterator.hasNext()) {
+                    CartDetail cartDetail = iteratorCartDetailIterator.next();
+                    dto = new CartDetailResDTO(cartDetail);
+                    cartDetailResDTOS.add(dto);
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", cartDetailResDTOS));
             }
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new ArrayList<>()));
@@ -56,12 +61,26 @@ public class CartController {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
         if (user != null) {
             Carts cart = cartService.getCartByUserId(user.getId());
-            if(cart == null){
+            if (cart == null) {
                 Carts createCart = new Carts();
                 createCart.setUsers(user);
                 cart = cartService.save(createCart);
             }
-            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+            // loi khi khanh hang moi chua co cart detail
+//            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
+
+            Optional<CartDetail> cartDetail;
+            List<CartDetail> cartDetails = cart.getCartDetails();
+
+            if (cartDetails != null) {
+                cartDetail = cartDetails.stream()
+                        .filter(c -> c.getProducts().getId() == cartReqDTO.getProductId())
+                        .findFirst();
+            } else {
+                cartDetail = Optional.empty();
+            }
+// end
+
             CartDetail cartDetail1;
             if (cartDetail.isPresent()) {
                 cartDetail1 = cartDetail.get();
@@ -86,14 +105,29 @@ public class CartController {
     @DeleteMapping("/")
     public ResponseEntity<?> deleteFromCart(@Valid @RequestBody CartReqDTO cartReqDTO) {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
-        if (user != null) {
-            Carts cart = cartService.getCartByUserId(user.getId());
-            Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
-            if (cartDetail.isPresent()) {
-                cartDetailService.remove(cartDetail.get());
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
-            }
+        Carts cart = cartService.getCartByUserId(user.getId());
+        Optional<CartDetail> cartDetail = cart.getCartDetails()
+                .stream()
+                .filter(c -> c.getProducts().getId() == cartReqDTO.getProductId())
+                .findFirst();
+        if (cartDetail.isPresent()) {
+            cartDetailService.remove(cartDetail.get());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("status", "success", "data", new CartDetailResDTO(cartDetail.get())));
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
+
+    @DeleteMapping("/all/{idUser}")
+    public ResponseEntity<?> deleteAllProductInCart(@PathVariable Long idUser) {
+        Carts cart = cartService.getCartByUserId(idUser);
+        List<CartDetail> cartDetail = cart.getCartDetails();
+
+        for (CartDetail c : cartDetail) {
+            cartDetailService.remove(c);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
 }

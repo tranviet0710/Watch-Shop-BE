@@ -86,9 +86,9 @@ public class ProductServiceImpl implements ProductService {
                 image.setUpdateDate(currentDate);
                 image.setSource(fileName);
                 image.setProducts(newProduct);
-                newProduct.setImages(new HashSet<>(Collections.singleton(image)));
-                Products products1 = productRepository.save(newProduct);
-                return products1;
+//                newProduct.setImages((List<Images>) new HashSet<>(Collections.singleton(image)));
+                newProduct.setImages(Collections.singletonList(image));
+                return productRepository.save(newProduct);
             } catch (IOException e) {
                 System.err.println("save file error " + e);
                 return null;
@@ -120,7 +120,8 @@ public class ProductServiceImpl implements ProductService {
                 images.setSource(fileName);
                 images.setUpdateDate(currentDate);
                 //update image vao data
-                oldProduct.setImages(new HashSet<>(Collections.singleton(images)));
+//                oldProduct.setImages(new HashSet<>(Collections.singleton(images)));
+                oldProduct.setImages(Collections.singletonList(images));
             }
             oldProduct.setName(products.getName());
             oldProduct.setPrice(products.getPrice());
@@ -140,8 +141,7 @@ public class ProductServiceImpl implements ProductService {
             oldProduct.setProductWeight(products.getProductWeight());
             oldProduct.setUpdateDate(currentDate);
             oldProduct.setBrands(brands);
-            Products products1 = productRepository.save(oldProduct);
-            return products1;
+            return productRepository.save(oldProduct);
         }
     }
 
@@ -168,7 +168,11 @@ public class ProductServiceImpl implements ProductService {
         }
         Products products = optionalProducts.get();
 
-        ImageFile.deleteImageFile(products.getImages().stream().findFirst().get().getSource());
+        try {
+            ImageFile.deleteImageFile(products.getImages().stream().findFirst().get().getSource());
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
         productRepository.deleteById(products.getId());
         return true;

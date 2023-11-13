@@ -2,19 +2,17 @@ package com.example.WatchShop.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Products {
 
     @Id
@@ -44,14 +42,14 @@ public class Products {
     private Brands brands;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Images> images;
+    private List<Images> images; // to list
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Set<OrderDetail> orderDetails;
+    private List<OrderDetail> orderDetails;  // to list
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Set<CartDetail> cartDetails;
+    private List<CartDetail> cartDetails;  // to list
 
 }

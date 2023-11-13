@@ -69,6 +69,7 @@ public class ProductController {
 
     @PostMapping("/")
     public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products) {
+        System.err.println(products);
         Products products1 = productService.save(products);
         if (products1 == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

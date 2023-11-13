@@ -4,6 +4,8 @@ import com.example.WatchShop.model.Carts;
 import com.example.WatchShop.model.Roles;
 import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.req.UsersReqDTO;
+import com.example.WatchShop.model.dto.res.Response1Form;
+import com.example.WatchShop.model.dto.res.UserResDTO;
 import com.example.WatchShop.repository.RolesRepository;
 import com.example.WatchShop.repository.UsersRepository;
 import com.example.WatchShop.service.i_service.JwtService;
@@ -20,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -105,15 +109,8 @@ public class UserServiceImlp implements UserService {
     @Override
     public Users deleteById(Long id) {
         Users users = usersRepository.getById(id);
-        if (users != null) {
-            if (users.getIsDeleted()) {
-                users.setIsDeleted(false);
-            } else {
-                users.setIsDeleted(true);
-            }
-            return usersRepository.save(users);
-        }
-        return null;
+        users.setIsDeleted(!users.getIsDeleted());
+        return usersRepository.save(users);
     }
 
     @Override
@@ -164,11 +161,33 @@ public class UserServiceImlp implements UserService {
     public Optional<Users> getUserFromRequest(HttpServletRequest request) {
         String token = jwtService.getTokenFromRequest(request);
         String email = jwtService.extractEmail(token);
-        Optional<Users> optionalUser = getUserByEmail(email);
-        return optionalUser;
+        return getUserByEmail(email);
     }
 
     public boolean isCorrectPassword(Users user, String currentPassword) {
         return encoder.matches(currentPassword, user.getPassword());
+    }
+
+    @Override
+    public List<Response1Form> topUserBuyTheMost(int i) {
+        Users user = null;
+        Response1Form response1Form = null;
+        List<Response1Form> response1Forms = new ArrayList<>();
+        List<Map<String, Object>> result = usersRepository.topUserBuyTheMost(i);
+
+        for (Map<String, Object> rs : result) {
+            user = usersRepository.findById((Long) rs.get("user_id")).orElseThrow();
+            user.setPassword("");
+
+            Integer quantity = (Integer) rs.get("quantity");
+
+            response1Form = Response1Form.builder()
+                    .users(new UserResDTO(user))
+                    .quantity(quantity)
+                    .build();
+            response1Forms.add(response1Form);
+        }
+
+        return response1Forms;
     }
 }
