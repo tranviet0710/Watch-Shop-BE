@@ -32,40 +32,53 @@ public class OrderController {
     @Autowired
     private CartService cartService;
 
+@GetMapping("/")
+public ResponseEntity<?> getOrder(HttpServletRequest request) {
+    Users user = userService.getUserFromRequest(request).get();
+    List<Orders> ordersList;
 
-    @GetMapping("/")
-    public ResponseEntity<?> getOrder(HttpServletRequest request) {
-        Users user = userService.getUserFromRequest(request).get();
-        if (user != null) {
-            Orders orders = orderService.getOrderByUserId(user.getId());
-            // Create OrderDTO từ Orders
-            OrderResDTO orderResDTO = new OrderResDTO();
-            orderResDTO.setId(orders.getId());
-            orderResDTO.setEmailUser(user.getEmail());
-            orderResDTO.setAddress(user.getAddress());
-            orderResDTO.setStatus(orders.getStatus());
-            orderResDTO.setTotalAmount(orders.getTotal());
-            orderResDTO.setOrderCode(orders.getOrderCode());
-
-            // Trả về OrderDTO thay vì Orders
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTO));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    if (user.getRoles().getName().equals("ROLE_USER")) {
+        ordersList = new ArrayList<>(user.getOrders());
+    } else {
+        ordersList = orderService.getAllOrder();
     }
 
-    @GetMapping("/order-detail")
-    public ResponseEntity<?> getCarts(HttpServletRequest request) {
-        Users user = userService.getUserFromRequest(request).get();
+    List<OrderResDTO> orderResDTOList = new ArrayList<>();
+    for (Orders orders : ordersList) {
+        OrderResDTO orderResDTO = new OrderResDTO();
+        orderResDTO.setId(orders.getId());
+        orderResDTO.setEmailUser(user.getEmail());
+        orderResDTO.setAddress(user.getAddress());
+        orderResDTO.setStatus(orders.getStatus());
+        orderResDTO.setTotalAmount(orders.getTotal());
+        orderResDTO.setOrderCode(orders.getOrderCode());
+        orderResDTOList.add(orderResDTO);
+    }
 
-        if (user != null) {
-            Orders orders = orderService.getOrderByUserId(user.getId());
-            System.err.println(orders + "ordersDetail");
-            List<OrderDetailResDTO> orderResDTOS = orders.getOrderDetails().stream().map(OrderDetailResDTO::new).toList();
-            if (orders != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTOS));
+    return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderResDTOList));
+}
+
+    @GetMapping("/order-detail/{id}")
+    public ResponseEntity<?> getOrderDetailByOrderId(@PathVariable("id") Long id) {
+        Optional<Orders> ordersOptional = orderService.getOrderById(id);
+
+        if (ordersOptional.isPresent()) {
+            Orders orders = ordersOptional.get();
+            List<OrderDetail> orderDetails = orders.getOrderDetails();
+            List<OrderDetailResDTO> orderDetailResDTOList = new ArrayList<>();
+            for (OrderDetail orderDetail : orderDetails) {
+                OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
+                orderDetailResDTO.setId(orderDetail.getId());
+                orderDetailResDTO.setQuantity(orderDetail.getQuantity());
+                orderDetailResDTO.setProductName(orderDetail.getProducts().getName());
+                orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
+                orderDetailResDTOList.add(orderDetailResDTO);
             }
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", orderDetailResDTOList));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("/")
@@ -94,10 +107,15 @@ public class OrderController {
                 orderDetail.setProducts(cartDetail.getProducts());
                 orderDetail.setQuantity(cartDetail.getQuantity());
                 orderDetailService.save(orderDetail);
+                // Tăng quantity soldQuantity
+                Products product = cartDetail.getProducts();
+                int soldQuantity = product.getSoldQuantity() + cartDetail.getQuantity();
+                product.setSoldQuantity(soldQuantity);
+                productService.save(product);
             }
             return ResponseEntity.status(HttpStatus.OK).body("Insert Successfuly");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("null");
+        return ResponseEntity.status(HttpStatus.OK).body("Insert Failed");
     }
 
     @PutMapping("/")

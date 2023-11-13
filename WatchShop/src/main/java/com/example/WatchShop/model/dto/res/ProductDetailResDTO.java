@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -36,10 +35,10 @@ public class ProductDetailResDTO {
     private Double productWeight;
     private Date createDate;
     private Date updateDate;
-
+    private Double star;
     private Long brandID;
 
-    private Set<String> imageSource;
+    private List<String> imageSource;
     private List<ProductResDTO> sameBrandProducts;
 
     public ProductDetailResDTO(Products products) {
@@ -63,6 +62,6 @@ public class ProductDetailResDTO {
         this.createDate = products.getCreateDate();
         this.updateDate = products.getUpdateDate();
         this.brandID = products.getBrands().getId();
-        this.imageSource = products.getImages().stream().map(Images::getSource).collect(Collectors.toSet());
+        this.imageSource = products.getImages().stream().map(Images::getSource).collect(Collectors.toList());
     }
 }

@@ -49,7 +49,7 @@ public class UsersController {
         }
         // Generate access token
         String accessToken = jwtService.generateToken(user.get(), user.get().getAuthorities());
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new UserResDTO(user.get()), "accessToken", accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", new UserResDTO(user.get()), "accessToken", accessToken, "userID", user.get().getId()));
     }
 
     @PostMapping("/forgot-password")

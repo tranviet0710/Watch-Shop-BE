@@ -56,6 +56,11 @@ public class CartController {
         Users user = userService.getUserById(cartReqDTO.getUserId()).get();
         if (user != null) {
             Carts cart = cartService.getCartByUserId(user.getId());
+            if(cart == null){
+                Carts createCart = new Carts();
+                createCart.setUsers(user);
+                cart = cartService.save(createCart);
+            }
             Optional<CartDetail> cartDetail = cart.getCartDetails().stream().filter(c -> c.getProducts().getId() == cartReqDTO.getProductId()).findFirst();
             CartDetail cartDetail1;
             if (cartDetail.isPresent()) {
