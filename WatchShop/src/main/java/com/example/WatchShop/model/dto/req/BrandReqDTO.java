@@ -1,10 +1,8 @@
 package com.example.WatchShop.model.dto.req;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class BrandReqDTO {
-    private String name;
+  private String name;
 }

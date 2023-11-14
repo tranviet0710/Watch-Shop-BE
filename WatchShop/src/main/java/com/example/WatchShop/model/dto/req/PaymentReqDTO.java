@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PaymentReqDTO {
-    private long total;
-    private String urlReturn;
+  private long total;
+  private String urlReturn;
 }

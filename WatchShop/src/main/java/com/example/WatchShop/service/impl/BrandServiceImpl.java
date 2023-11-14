@@ -3,36 +3,30 @@ package com.example.WatchShop.service.impl;
 import com.example.WatchShop.model.Brands;
 import com.example.WatchShop.repository.BrandRepository;
 import com.example.WatchShop.service.i_service.BrandService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
+  private final BrandRepository brandRepository;
 
-    @Autowired
-    private BrandRepository brandRepository;
+  @Override
+  public List<Brands> getAllBrands() {
+    return brandRepository.findAll();
+  }
 
-    @Override
-    public List<Brands> getAllBrands() {
-        return brandRepository.findAll();
-    }
+  @Override
+  public Brands save(Brands brands) {
+    return brandRepository.save(brands);
+  }
 
-    @Override
-    public Brands save(Brands brands) {
-        return brandRepository.save(brands);
-    }
-
-    @Override
-    public void remove(Long id) {
-        brandRepository.removeById(id);
-    }
-
-    @Override
-    public Brands findById(Long id) {
-        Optional<Brands> brands = brandRepository.findById(id);
-        return brands.orElse(null);
-    }
+  @Override
+  public Brands findById(Long id) {
+    Optional<Brands> brands = brandRepository.findById(id);
+    return brands.orElse(null);
+  }
 }

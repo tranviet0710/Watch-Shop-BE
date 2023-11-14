@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
-
-    Rating findByUsersIdAndProductsId(Long userId, Long productId);
+  Rating findByUsersIdAndProductsId(Long userId, Long productId);
 }

@@ -5,11 +5,9 @@ import com.example.WatchShop.model.Brands;
 import java.util.List;
 
 public interface BrandService {
-    List<Brands> getAllBrands();
+  List<Brands> getAllBrands();
 
-    Brands save(Brands brands);
+  Brands save(Brands brands);
 
-    void remove(Long id);
-
-    Brands findById(Long id);
+  Brands findById(Long id);
 }
