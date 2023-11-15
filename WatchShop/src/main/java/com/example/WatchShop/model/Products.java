@@ -21,6 +21,7 @@ public class Products {
     private String name;
     private Double price;
     private Double discount;
+    @Column(name = "description", columnDefinition = "nvarchar(1000)")
     private String description;
     private Integer quantity;
     private Integer soldQuantity = 0;
