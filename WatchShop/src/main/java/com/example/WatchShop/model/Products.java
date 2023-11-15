@@ -18,21 +18,28 @@ public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name", columnDefinition = "nvarchar(255)")
     private String name;
     private Double price;
     private Double discount;
-    @Column(name = "description", columnDefinition = "nvarchar(1000)")
+    @Column(columnDefinition = "nvarchar(1000)")
     private String description;
     private Integer quantity;
     private Integer soldQuantity = 0;
+    @Column( columnDefinition = "nvarchar(255)")
     private String model;
+    @Column(columnDefinition = "nvarchar(255)")
     private String color;
+    @Column( columnDefinition = "nvarchar(255)")
     private String origin;
     private Integer warrantyPeriod;
     private Double screenSize;
     private Double faceSize;
+    @Column( columnDefinition = "nvarchar(255)")
     private String faceMaterial;
+    @Column( columnDefinition = "nvarchar(255)")
     private String frameMaterial;
+    @Column( columnDefinition = "nvarchar(255)")
     private String wireMaterial;
     private Double productWeight;
     private Date createDate;
