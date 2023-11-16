@@ -1,14 +1,16 @@
 package com.example.WatchShop.service.i_service;
 
-import com.example.WatchShop.model.Carts;
-import com.example.WatchShop.model.Users;
+import com.example.WatchShop.model.dto.req.CartDetailResDTO;
+import com.example.WatchShop.model.dto.req.CartReqDTO;
+import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface CartService {
-  public Carts getCartByUserId(Long id);
 
-  Optional<Carts> getCartByUsers(Users users);
+  List<CartDetailResDTO> getcartDetail(HttpServletRequest request);
 
-  Carts save(Carts carts);
+  void removeAllProductInCart(Long idUser);
+
+  CartDetailResDTO deleteFromCart(CartReqDTO cartReqDTO);
 }

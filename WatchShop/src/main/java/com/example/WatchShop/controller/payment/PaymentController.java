@@ -7,6 +7,7 @@ import com.example.WatchShop.service.i_service.UserService;
 import com.example.WatchShop.util.VnPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,14 @@ import java.util.*;
 @CrossOrigin
 @RequestMapping("api/vn-pay")
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentController {
   private final UserService userService;
 
   @PostMapping("/create-payment")
   public ResponseEntity<Object> createPayment(HttpServletRequest request, @RequestBody PaymentReqDTO paymentReqDTO)
       throws UnsupportedEncodingException {
+    log.info("createPayment");
     Users user = userService.getUserFromRequest(request).get();
     long amount = paymentReqDTO.getTotal() * 100;
     String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
@@ -93,6 +96,4 @@ public class PaymentController {
         .status(HttpStatus.OK)
         .body(paymentResDTO);
   }
-
-
 }

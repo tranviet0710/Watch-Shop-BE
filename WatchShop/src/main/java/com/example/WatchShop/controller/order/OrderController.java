@@ -1,45 +1,33 @@
 package com.example.WatchShop.controller.order;
 
-import com.example.WatchShop.model.*;
+import com.example.WatchShop.model.Orders;
 import com.example.WatchShop.model.dto.req.OrderReqDTO;
 import com.example.WatchShop.model.dto.res.OrderDetailResDTO;
 import com.example.WatchShop.model.dto.res.OrderResDTO;
-import com.example.WatchShop.service.i_service.*;
+import com.example.WatchShop.service.i_service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/order")
 @CrossOrigin
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
-  private final UserService userService;
   private final OrderService orderService;
-  private final ProductService productService;
-  private final OrderDetailService orderDetailService;
-  private final CartService cartService;
 
   @GetMapping("/")
   public ResponseEntity<?> getOrder(HttpServletRequest request) {
-    Users user = userService.getUserFromRequest(request).get();
-    List<Orders> ordersList = null;
-
-    if ("ROLE_USER".equals(user.getRoles().getName())) {
-      ordersList = new ArrayList<>(user.getOrders());
-    } else {
-      ordersList = orderService.getAllOrder();
-    }
-
-    List<OrderResDTO> orderResDTOList = new ArrayList<>();
-    for (Orders orders : ordersList) {
-      OrderResDTO orderResDTO = new OrderResDTO(orders);
-      orderResDTOList.add(orderResDTO);
-    }
+    log.info("getOrder");
+    List<OrderResDTO> orderResDTOList = orderService.getAllOrder(request);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -49,75 +37,19 @@ public class OrderController {
 
   @GetMapping("/order-detail/{id}")
   public ResponseEntity<?> getOrderDetailByOrderId(@PathVariable("id") Long id) {
-    Optional<Orders> ordersOptional = orderService.getOrderById(id);
+    log.info("getOrderDetailByOrderId");
+    List<OrderDetailResDTO> orderDetailResDTOList = orderService.getOrderDetailByOrderId(id);
 
-    if (ordersOptional.isPresent()) {
-      Orders orders = ordersOptional.get();
-      List<OrderDetail> orderDetails = orders.getOrderDetails();
-      List<OrderDetailResDTO> orderDetailResDTOList = new ArrayList<>();
-      for (OrderDetail orderDetail : orderDetails) {
-        OrderDetailResDTO orderDetailResDTO = getOrderDetailResDTO(orderDetail);
-        orderDetailResDTOList.add(orderDetailResDTO);
-      }
-
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(Map.of("status", "success",
-              "data", orderDetailResDTOList));
-    } else {
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(null);
-    }
-  }
-
-  private static OrderDetailResDTO getOrderDetailResDTO(OrderDetail orderDetail) {
-    OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
-    orderDetailResDTO.setId(orderDetail.getId());
-    orderDetailResDTO.setQuantity(orderDetail.getQuantity());
-    orderDetailResDTO.setProducts(orderDetail.getProducts());
-    orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
-    orderDetailResDTO.setCreateDate(orderDetail.getCreateDate());
-    orderDetailResDTO.setUserId(orderDetail.getOrders().getUsers().getId());
-    return orderDetailResDTO;
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(Map.of("status", "success",
+            "data", orderDetailResDTOList));
   }
 
   @PostMapping("/")
   public ResponseEntity<?> addToOrder(@RequestBody OrderReqDTO orderReqDTO) {
-    Users user = userService.getUserById(orderReqDTO.getUserId()).get();
-    Optional<Carts> cart = cartService.getCartByUsers(user);
-    // tao order tu cart
-    Orders orders = new Orders();
-    orders.setDate(new java.sql.Date(new Date().getTime()));
-
-    // Create HD + Date
-    orders.setOrderCode("HD" + new Date().getTime());
-    orders.setStatus(orderReqDTO.getStatus());
-    orders.setTotal(orderReqDTO.getTotal());
-    orders.setUsers(user);
-    orders.setCreateDate(new java.sql.Date(new Date().getTime()));
-    Orders orders1 = orderService.save(orders);
-    List<CartDetail> cartDetails = null;
-
-    if (cart.isPresent()) {
-      cartDetails = cart.get().getCartDetails();
-    } else {
-      cartDetails = new ArrayList<>();
-    }
-
-    OrderDetail orderDetail;
-    for (CartDetail cartDetail : cartDetails) {
-      orderDetail = new OrderDetail();
-      orderDetail.setOrders(orders1);
-      orderDetail.setProducts(cartDetail.getProducts());
-      orderDetail.setQuantity(cartDetail.getQuantity());
-      orderDetailService.save(orderDetail);
-      // Tăng soldQuantity và giảm quantity của sản phẩm
-      Products product = cartDetail.getProducts();
-      product.setSoldQuantity(product.getSoldQuantity() + cartDetail.getQuantity());
-      product.setQuantity(product.getQuantity() - cartDetail.getQuantity());
-      productService.save(product);
-    }
+    log.info("addToOrder");
+    orderService.addToOrder(orderReqDTO);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -126,6 +58,7 @@ public class OrderController {
 
   @PutMapping("/")
   public ResponseEntity<?> updateOrder(@RequestBody OrderReqDTO orderReqDTO) {
+    log.info("updateOrder");
     Optional<Orders> orderOptional = orderService.getOrderById(orderReqDTO.getOrderId());
     if (orderOptional.isPresent()) {
       Orders orders = orderOptional.get();
@@ -137,7 +70,7 @@ public class OrderController {
     } else {
       return ResponseEntity
           .status(HttpStatus.NOT_FOUND)
-          .body("No Order found with the given OrderId.");
+          .build();
     }
   }
 }

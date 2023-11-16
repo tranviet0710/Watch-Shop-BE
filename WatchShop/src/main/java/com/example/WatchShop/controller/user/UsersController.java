@@ -9,6 +9,7 @@ import com.example.WatchShop.util.PasswordUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RequestMapping("api")
 @RequiredArgsConstructor
+@Slf4j
 public class UsersController {
   private final UserService userService;
   private final PasswordEncoder passwordEncoder;
@@ -29,9 +31,10 @@ public class UsersController {
 
   @PostMapping("/register")
   public ResponseEntity<?> registerUser(@RequestBody UsersReqDTO usersDTO) {
+    log.info("registerUser");
     if (userService.existsByEmail(usersDTO.getEmail())) {
       return ResponseEntity
-          .badRequest()
+          .status(HttpStatus.BAD_REQUEST)
           .body(Map.of("status", "fail",
               "message", "Email already existed!"));
     }
@@ -44,6 +47,7 @@ public class UsersController {
 
   @PostMapping("/login")
   public ResponseEntity<?> loginUser(@RequestBody UsersReqDTO usersDTO) {
+    log.info("loginUser");
     Optional<Users> user = userService.getUsersByEmailAndPassword(usersDTO.getEmail(), usersDTO.getPassword());
     if (user.isEmpty() || user.get().getIsDeleted()) {
       return ResponseEntity
@@ -63,42 +67,45 @@ public class UsersController {
 
   @PostMapping("/forgot-password")
   public ResponseEntity<Object> forgotPassword(@RequestBody Map<String, String> email) throws MessagingException {
+    log.info("forgotPassword");
     Optional<Users> user = userService.getUserByEmail(email.get("email"));
-    if (user.isPresent() || !user.get().getIsDeleted()) {
-      String password = PasswordUtils.generateRandomPassword(12);
-      user.get()
-          .setPassword(passwordEncoder.encode(password));
-      userService.save(user.get());
-      userService.sendRecoverPassword(user.get(), password);
+
+    if (user.isEmpty()) {
       return ResponseEntity
-          .ok()
-          .body("Please check your email to get recovery password!");
-    } else {
-      return ResponseEntity
-          .ok()
+          .status(HttpStatus.OK)
           .body("Invalid email or email has not been registered!");
     }
+
+    String password = PasswordUtils.generateRandomPassword(12);
+    user.get()
+        .setPassword(passwordEncoder.encode(password));
+    userService.save(user.get());
+    userService.sendRecoverPassword(user.get(), password);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body("Please check your email to get recovery password!");
   }
 
   @PostMapping("/change-password")
   public ResponseEntity<Object> changePassword(HttpServletRequest request, @RequestBody Map<String, String> passwords) {
+    log.info("changePassword");
     Users user = userService.getUserFromRequest(request).get();
     if (userService.isCorrectPassword(user, passwords.get("currentPassword"))) {
       String newPassword = passwordEncoder.encode(passwords.get("newPassword"));
       user.setPassword(newPassword);
       userService.save(user);
       return ResponseEntity
-          .ok()
+          .status(HttpStatus.OK)
           .body("Change password successfully!");
-    } else {
-      return ResponseEntity
-          .status(HttpStatus.PRECONDITION_FAILED)
-          .body("Your current password is not correct. Please try again!");
     }
+    return ResponseEntity
+        .status(HttpStatus.PRECONDITION_FAILED)
+        .body("Your current password is not correct. Please try again!");
   }
 
   @GetMapping("/users")
   public ResponseEntity<?> getAllUser() {
+    log.info("getAllUser");
     List<Users> usersList = userService.findAllUser();
     List<UserResDTO> userResDTOS = usersList
         .stream()
@@ -113,6 +120,7 @@ public class UsersController {
 
   @GetMapping("/users/{id}")
   public ResponseEntity<?> getUserDetail(@PathVariable("id") Long id) {
+    log.info("getUserDetail");
     Users user = userService.getUserById(id).get();
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -122,6 +130,7 @@ public class UsersController {
 
   @PutMapping("/users/{id}")
   public ResponseEntity<?> updateUser(@RequestBody UsersReqDTO usersDTO, @PathVariable("id") Long id) {
+    log.info("updateUser");
     Users updateUsers = userService.updateUsers(usersDTO, id);
     if (updateUsers == null) {
       return ResponseEntity
@@ -137,18 +146,17 @@ public class UsersController {
 
   @DeleteMapping("/users/{id}")
   public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    log.info("deleteUser");
     Users users = userService.deleteById(id);
     if (users == null) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("status", "fail",
               "message", "Users delete failed"));
-    } else {
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(Map.of("status", "success",
-              "message", "Users delete successfully"));
-
     }
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(Map.of("status", "success",
+            "message", "Users delete successfully"));
   }
 }
