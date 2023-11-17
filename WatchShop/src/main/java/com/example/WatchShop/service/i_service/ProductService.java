@@ -2,21 +2,20 @@ package com.example.WatchShop.service.i_service;
 
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.model.dto.req.ProductReqDTO;
+import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductService {
-
-  List<Products> findAllProduct();
-
-  Optional<Products> getProductById(Long id);
+  ProductDetailResDTO getProductById(Long id);
 
   Products save(ProductReqDTO products);
 
   Products save(Products products);
 
-  List<Products> getProductsByBrand(Long brandId);
-
   boolean removeProduct(Long id);
+
+  List<ProductDetailResDTO> getAllProduct(Long brandID);
+
+  List<ProductDetailResDTO> getTop5Product();
 }

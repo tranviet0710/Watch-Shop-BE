@@ -17,8 +17,7 @@ public final class ImageFile {
     public static final String PATH_IMAGE = "src\\main\\resources\\static\\image\\";
     public static final String URL_API_IMAGE = "http://localhost:8080/api/images/";
 
-  private ImageFile() {
-  }
+  private ImageFile() {}
 
   public static String saveImageFile(MultipartFile imageFile) throws IOException {
     if (imageFile.isEmpty()) {
@@ -26,7 +25,7 @@ public final class ImageFile {
     }
 
     Path path = Paths.get(PATH_IMAGE);
-    System.err.println(path.toAbsolutePath());
+//    System.err.println(path.toAbsolutePath());
 
     InputStream inputStream = imageFile.getInputStream();
     String extension = getFileExtension(imageFile);

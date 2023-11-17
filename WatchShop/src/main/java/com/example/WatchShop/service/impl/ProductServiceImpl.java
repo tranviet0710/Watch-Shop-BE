@@ -4,11 +4,16 @@ import com.example.WatchShop.model.Brands;
 import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
 import com.example.WatchShop.model.dto.req.ProductReqDTO;
+import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
+import com.example.WatchShop.model.dto.res.ProductResDTO;
+import com.example.WatchShop.repository.BrandRepository;
 import com.example.WatchShop.repository.ImageRepository;
 import com.example.WatchShop.repository.ProductRepository;
 import com.example.WatchShop.service.i_service.ProductService;
+import com.example.WatchShop.service.i_service.RatingService;
 import com.example.WatchShop.util.ImageFile;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,24 +22,35 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
   private final ProductRepository productRepository;
-  private final BrandServiceImpl brandService;
   private final ImageRepository imageRepository;
+  private final BrandRepository brandRepository;
+  private final RatingService ratingService;
 
   @Override
-  public List<Products> findAllProduct() {
-    return productRepository.findAll();
-  }
+  public ProductDetailResDTO getProductById(Long id) {
+    Optional<Products> products = productRepository.findById(id);
+    ProductDetailResDTO productDetailResDTO = new ProductDetailResDTO(products.get());
+    List<Products> getSameBrandProducts = productRepository.findAllByBrandsId(productDetailResDTO.getBrandID());
 
-  @Override
-  public Optional<Products> getProductById(Long id) {
-    return productRepository.findById(id);
+    List<ProductResDTO> getSameBrandProductsRes = getSameBrandProducts
+        .stream()
+        .map(ProductResDTO::new)
+        .toList();
+
+    getSameBrandProductsRes.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+    productDetailResDTO.setSameBrandProducts(getSameBrandProductsRes);
+    return productDetailResDTO;
   }
 
   @Override
   public Products save(ProductReqDTO products) {
-    Brands brands = brandService.findById(products.getIdBrand());
+    Brands brands = brandRepository
+        .findById(products.getIdBrand())
+        .orElse(null);
+
     if (brands == null) {
       return null;
     }
@@ -78,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
         newProduct.setImages(Collections.singletonList(image));
         return productRepository.save(newProduct);
       } catch (IOException e) {
-        System.err.println("save file error " + e);
+        log.error("save file error", e);
         return null;
       }
     }
@@ -99,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
         try {
           fileName = ImageFile.saveImageFile(products.getImages());
         } catch (IOException e) {
-          e.printStackTrace();
+          log.error("save file error", e);
           return null;
         }
         boolean hasRemoved = ImageFile.deleteImageFile(
@@ -156,11 +172,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public List<Products> getProductsByBrand(Long brandId) {
-    return productRepository.findAllByBrandsId(brandId);
-  }
-
-  @Override
   public boolean removeProduct(Long id) {
     Optional<Products> optionalProducts = productRepository.findById(id);
     if (optionalProducts.isEmpty()) {
@@ -178,10 +189,57 @@ public class ProductServiceImpl implements ProductService {
               .getSource()
       );
     } catch (Exception e) {
-      System.err.println(e);
+      log.error("handel file error", e);
     }
 
     productRepository.deleteById(products.getId());
     return true;
+  }
+
+  @Override
+  public List<ProductDetailResDTO> getAllProduct(Long brandID) {
+    List<Products> products = productRepository.findAll();
+    if (brandID != null) {
+      products = products
+          .stream()
+          .filter(x -> x.getBrands().getId().equals(brandID))
+          .toList();
+    }
+
+    if (products.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    List<ProductDetailResDTO> productDetailResDTOS = products
+        .stream()
+        .map(ProductDetailResDTO::new)
+        .toList();
+
+    productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+
+    return productDetailResDTOS;
+  }
+
+  @Override
+  public List<ProductDetailResDTO> getTop5Product() {
+    List<Products> products = productRepository
+        .findAll()
+        .stream()
+        .filter(x -> x.getSoldQuantity() != null)
+        .sorted(Comparator.comparing(Products::getSoldQuantity, Comparator.reverseOrder()))
+        .limit(5)
+        .toList();
+
+    if (products.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    List<ProductDetailResDTO> productDetailResDTOS = products
+        .stream()
+        .map(ProductDetailResDTO::new)
+        .toList();
+
+    productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+    return productDetailResDTOS;
   }
 }

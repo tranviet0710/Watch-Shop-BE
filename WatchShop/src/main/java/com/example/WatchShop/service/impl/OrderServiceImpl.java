@@ -1,29 +1,32 @@
 package com.example.WatchShop.service.impl;
 
-import com.example.WatchShop.model.OrderDetail;
-import com.example.WatchShop.model.Orders;
+import com.example.WatchShop.model.*;
+import com.example.WatchShop.model.dto.req.OrderReqDTO;
+import com.example.WatchShop.model.dto.res.OrderDetailResDTO;
+import com.example.WatchShop.model.dto.res.OrderResDTO;
 import com.example.WatchShop.model.dto.res.UserResDTO;
+import com.example.WatchShop.repository.CartRepository;
+import com.example.WatchShop.repository.OrderDetailRepository;
 import com.example.WatchShop.repository.OrderRepository;
+import com.example.WatchShop.repository.ProductRepository;
 import com.example.WatchShop.service.i_service.OrderService;
 import com.example.WatchShop.service.i_service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
+  private final OrderDetailRepository orderDetailRepository;
   private final UserService userService;
-
-  @Override
-  public List<Orders> getAllOrder() {
-    return orderRepository.findAll();
-  }
+  private final CartRepository cartRepository;
+  private final ProductRepository productRepository;
 
   @Override
   public Orders save(Orders orders) {
@@ -37,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public List<UserResDTO> get5BestSellers() {
-    List<Orders> allOrders = getAllOrder();
+    List<Orders> allOrders = orderRepository.findAll();
     List<OrderDetail> orderDetails;
     Map<Long, Double> totalMoneyPaidByUser = new HashMap<>();
     Double totalMoney;
@@ -109,5 +112,92 @@ public class OrderServiceImpl implements OrderService {
     } catch (Exception e) {
       return 0;
     }
+  }
+
+  @Override
+  public List<OrderResDTO> getAllOrder(HttpServletRequest request) {
+    Users user = userService.getUserFromRequest(request).get();
+    List<Orders> ordersList = null;
+
+    if ("ROLE_USER".equals(user.getRoles().getName())) {
+      ordersList = new ArrayList<>(user.getOrders());
+    } else {
+      ordersList = orderRepository.findAll();
+    }
+
+    List<OrderResDTO> orderResDTOList = new ArrayList<>();
+    for (Orders orders : ordersList) {
+      OrderResDTO orderResDTO = new OrderResDTO(orders);
+      orderResDTOList.add(orderResDTO);
+    }
+    return orderResDTOList;
+  }
+
+  @Override
+  public List<OrderDetailResDTO> getOrderDetailByOrderId(Long id) {
+    Optional<Orders> ordersOptional = orderRepository.findById(id);
+
+    if (ordersOptional.isEmpty()) {
+      return null;
+    }
+
+    Orders orders = ordersOptional.get();
+    List<OrderDetail> orderDetails = orders.getOrderDetails();
+    List<OrderDetailResDTO> orderDetailResDTOList = new ArrayList<>();
+    for (OrderDetail orderDetail : orderDetails) {
+      OrderDetailResDTO orderDetailResDTO = getOrderDetailResDTO(orderDetail);
+      orderDetailResDTOList.add(orderDetailResDTO);
+    }
+
+    return orderDetailResDTOList;
+  }
+
+  @Override
+  public void addToOrder(OrderReqDTO orderReqDTO) {
+    Users user = userService.getUserById(orderReqDTO.getUserId()).get();
+    Optional<Carts> cart = cartRepository.findByUsers(user);
+    // tao order tu cart
+    Orders orders = new Orders();
+    orders.setDate(new java.sql.Date(new java.util.Date().getTime()));
+
+    // Create HD + Date
+    orders.setOrderCode("HD" + new java.util.Date().getTime());
+    orders.setStatus(orderReqDTO.getStatus());
+    orders.setTotal(orderReqDTO.getTotal());
+    orders.setUsers(user);
+    orders.setCreateDate(new java.sql.Date(new java.util.Date().getTime()));
+    Orders orders1 = orderRepository.save(orders);
+    List<CartDetail> cartDetails = null;
+
+    if (cart.isPresent()) {
+      cartDetails = cart.get().getCartDetails();
+    } else {
+      cartDetails = new ArrayList<>();
+    }
+
+    OrderDetail orderDetail;
+    for (CartDetail cartDetail : cartDetails) {
+      orderDetail = new OrderDetail();
+      orderDetail.setOrders(orders1);
+      orderDetail.setProducts(cartDetail.getProducts());
+      orderDetail.setQuantity(cartDetail.getQuantity());
+      orderDetailRepository.save(orderDetail);
+      // Tăng soldQuantity và giảm quantity của sản phẩm
+      Products product = cartDetail.getProducts();
+      product.setSoldQuantity(product.getSoldQuantity() + cartDetail.getQuantity());
+      product.setQuantity(product.getQuantity() - cartDetail.getQuantity());
+      productRepository.save(product);
+    }
+  }
+
+  private static OrderDetailResDTO getOrderDetailResDTO(OrderDetail orderDetail) {
+    OrderDetailResDTO orderDetailResDTO = new OrderDetailResDTO();
+    orderDetailResDTO.setId(orderDetail.getId());
+    orderDetailResDTO.setQuantity(orderDetail.getQuantity());
+    orderDetailResDTO.setProducts(orderDetail.getProducts());
+    orderDetailResDTO.setPrice(orderDetail.getProducts().getPrice());
+    orderDetailResDTO.setCreateDate(orderDetail.getCreateDate());
+    orderDetailResDTO.setUserId(orderDetail.getOrders().getUsers().getId());
+    return orderDetailResDTO;
   }
 }

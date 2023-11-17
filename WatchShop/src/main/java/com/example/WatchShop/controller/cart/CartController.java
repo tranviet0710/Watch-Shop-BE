@@ -1,153 +1,66 @@
 package com.example.WatchShop.controller.cart;
 
-import com.example.WatchShop.model.CartDetail;
-import com.example.WatchShop.model.Carts;
-import com.example.WatchShop.model.Products;
-import com.example.WatchShop.model.Users;
 import com.example.WatchShop.model.dto.req.CartDetailResDTO;
 import com.example.WatchShop.model.dto.req.CartReqDTO;
 import com.example.WatchShop.service.i_service.CartDetailService;
 import com.example.WatchShop.service.i_service.CartService;
-import com.example.WatchShop.service.i_service.ProductService;
-import com.example.WatchShop.service.i_service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/cart")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@Slf4j
 public class CartController {
-  private final UserService userService;
   private final CartService cartService;
-  private final ProductService productService;
   private final CartDetailService cartDetailService;
 
   @GetMapping("/")
   public ResponseEntity<?> getCarts(HttpServletRequest request) {
-    Optional<Users> optionalUsers = userService.getUserFromRequest(request);
-    if (optionalUsers.isPresent()) {
-      Users user = optionalUsers.get();
-      Carts c = cartService.getCartByUserId(user.getId());
-      if (c != null) {
-        Iterator<CartDetail> iteratorCartDetailIterator = c.getCartDetails().iterator();
-        List<CartDetailResDTO> cartDetailResDTOS = new ArrayList<>();
-        CartDetailResDTO dto = null;
-
-        while (iteratorCartDetailIterator.hasNext()) {
-          CartDetail cartDetail = iteratorCartDetailIterator.next();
-          dto = new CartDetailResDTO(cartDetail);
-          cartDetailResDTOS.add(dto);
-        }
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(Map.of("status", "success",
-                "data", cartDetailResDTOS));
-      }
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(Map.of("status", "success",
-              "data", new ArrayList<>()));
-    }
+    log.info("getCarts");
+    List<CartDetailResDTO> cartDetailResDTOS = cartService.getcartDetail(request);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(null);
+        .body(Map.of("status", "success",
+            "data", cartDetailResDTOS));
   }
 
   @PostMapping("/")
   public ResponseEntity<?> addToCart(@Valid @RequestBody CartReqDTO cartReqDTO) {
-    Optional<Users> optionalUsers = userService.getUserById(cartReqDTO.getUserId());
-
-    if (optionalUsers.isPresent()) {
-      Users user = optionalUsers.get();
-      Carts cart = cartService.getCartByUserId(user.getId());
-      if (cart == null) {
-        Carts createCart = new Carts();
-        createCart.setUsers(user);
-        cart = cartService.save(createCart);
-      }
-
-      Optional<CartDetail> cartDetail;
-      List<CartDetail> cartDetails = cart.getCartDetails();
-
-      if (cartDetails != null) {
-        cartDetail = cartDetails
-            .stream()
-            .filter(c -> c.getProducts().getId() == cartReqDTO.getProductId())
-            .findFirst();
-      } else {
-        cartDetail = Optional.empty();
-      }
-
-      CartDetail cartDetail1;
-      if (cartDetail.isPresent()) {
-        cartDetail1 = cartDetail.get();
-        if (cartReqDTO.getAmount() != null) {
-          cartDetail1.setQuantity(cartDetail1.getQuantity() + cartReqDTO.getAmount());
-        } else {
-          cartDetail1.setQuantity(cartDetail1.getQuantity() + 1);
-        }
-      } else {
-        Products products = productService.getProductById(cartReqDTO.getProductId()).get();
-        cartDetail1 = new CartDetail();
-        cartDetail1.setCarts(cart);
-        cartDetail1.setProducts(products);
-        cartDetail1.setQuantity(cartReqDTO.getAmount());
-      }
-
-      CartDetail savedCartDetail = cartDetailService.save(cartDetail1);
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(Map.of("status", "success",
-              "data", new CartDetailResDTO(savedCartDetail)));
-    }
-
+    log.info("addToCart");
+    CartDetailResDTO savedCartDetail = cartDetailService.addToCart(cartReqDTO);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(null);
+        .body(Map.of("status", "success",
+            "data", savedCartDetail));
   }
 
   @DeleteMapping("/")
   public ResponseEntity<?> deleteFromCart(@Valid @RequestBody CartReqDTO cartReqDTO) {
-    Users user = userService.getUserById(cartReqDTO.getUserId()).get();
-    Carts cart = cartService.getCartByUserId(user.getId());
-    Optional<CartDetail> cartDetail = cart
-        .getCartDetails()
-        .stream()
-        .filter(c -> c.getProducts().getId() == cartReqDTO.getProductId())
-        .findFirst();
-
-    if (cartDetail.isPresent()) {
-      cartDetailService.remove(cartDetail.get());
-      return ResponseEntity
-          .status(HttpStatus.OK)
-          .body(Map.of("status", "success",
-              "data", new CartDetailResDTO(cartDetail.get())));
-    }
-
+    log.info("deleteFromCart");
+    CartDetailResDTO cartDetailResDTO = cartService.deleteFromCart(cartReqDTO);
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(null);
+        .body(Map.of("status", "success",
+            "data", cartDetailResDTO));
   }
 
   @DeleteMapping("/all/{idUser}")
   public ResponseEntity<?> deleteAllProductInCart(@PathVariable Long idUser) {
-    Carts cart = cartService.getCartByUserId(idUser);
-    List<CartDetail> cartDetail = cart.getCartDetails();
-
-    for (CartDetail c : cartDetail) {
-      cartDetailService.remove(c);
-    }
+    log.info("deleteAllProductInCart");
+    cartService.removeAllProductInCart(idUser);
 
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(null);
+        .build();
   }
-
 }
