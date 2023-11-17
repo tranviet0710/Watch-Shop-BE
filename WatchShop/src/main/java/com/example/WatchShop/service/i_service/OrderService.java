@@ -7,16 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
+  List<Orders> getAllOrder();
 
-     List<Orders> getAllOrder();
+  Orders save(Orders orders);
 
-     Orders getOrderByUserId(Long id);
+  Optional<Orders> getOrderById(Long id);
 
-     Orders save(Orders orders);
+  List<UserResDTO> get5BestSellers();
 
-     Optional<Orders> getOrderById(Long id);
+  List<Double> statisticalByMonthAndYear(int month, int year);
 
-     List<UserResDTO> get5BestSellers();
-
-    List<Double> statisticalByMonthAndYear(int month, int year);
+  double statisticalByMonthAndYear(int year);
 }

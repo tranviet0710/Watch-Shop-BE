@@ -8,19 +8,15 @@ import java.util.Optional;
 
 public interface ProductService {
 
-    List<Products> findAllProduct();
+  List<Products> findAllProduct();
 
-    Optional<Products> getProductById(Long id);
+  Optional<Products> getProductById(Long id);
 
-    List<Products> getTop5Saler();
+  Products save(ProductReqDTO products);
 
-    Products save(ProductReqDTO products);
+  Products save(Products products);
 
-    Products save(Products products);
+  List<Products> getProductsByBrand(Long brandId);
 
-    List<Products> getProductsByBrand(Long brandId);
-
-    Products update(ProductReqDTO products);
-
-    boolean removeProduct(Long id);
+  boolean removeProduct(Long id);
 }

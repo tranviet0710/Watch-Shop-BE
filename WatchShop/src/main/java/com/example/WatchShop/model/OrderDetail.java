@@ -2,30 +2,28 @@ package com.example.WatchShop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private int quantity;
-    private Date createDate;
-    private Date updateDate;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
+  private int quantity;
+  private Date createDate;
+  private Date updateDate;
 
-    @ManyToOne
-    @JoinColumn(name = "idOrder")
-    private Orders orders;
+  @ManyToOne
+  @JoinColumn(name = "idOrder")
+  private Orders orders;
 
-    @ManyToOne
-    @JoinColumn(name = "idProduct")
-    private Products products;
+  @ManyToOne
+  @JoinColumn(name = "idProduct")
+  private Products products;
 }

@@ -3,16 +3,13 @@ package com.example.WatchShop.model.dto.res;
 import com.example.WatchShop.model.Images;
 import com.example.WatchShop.model.Products;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDetailResDTO {
@@ -37,7 +34,6 @@ public class ProductDetailResDTO {
     private Date updateDate;
     private Double star;
     private Long brandID;
-
     private List<String> imageSource;
     private List<ProductResDTO> sameBrandProducts;
 
@@ -62,6 +58,10 @@ public class ProductDetailResDTO {
         this.createDate = products.getCreateDate();
         this.updateDate = products.getUpdateDate();
         this.brandID = products.getBrands().getId();
-        this.imageSource = products.getImages().stream().map(Images::getSource).collect(Collectors.toList());
+        this.imageSource = products
+                .getImages()
+                .stream()
+                .map(Images::getSource)
+                .toList();
     }
 }

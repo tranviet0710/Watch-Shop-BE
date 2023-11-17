@@ -10,30 +10,29 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
+  Optional<Users> getUsersByEmailAndPassword(String email, String password);
 
-    Optional<Users> getUsersByEmailAndPassword(String email, String password);
+  Optional<Users> getUserByEmail(String email);
 
-    Optional<Users> getUserByEmail(String email);
+  Optional<Users> getUserById(Long id);
 
-    Optional<Users> getUserById(Long id);
+  List<Users> findAllUser();
 
-    List<Users> findAllUser();
+  void addUsers(UsersReqDTO usersDTO);
 
-    void addUsers(UsersReqDTO usersDTO);
+  Users updateUsers(UsersReqDTO usersDTO, Long id);
 
-    Users updateUsers(UsersReqDTO usersDTO, Long id);
+  Users deleteById(Long id);
 
-    Users deleteById(Long id);
+  Users save(Users users);
 
-    Users save(Users users);
+  boolean existsByEmail(String email);
 
-    boolean existsByEmail(String email);
+  void sendRecoverPassword(Users user, String password) throws MessagingException;
 
-    void sendRecoverPassword(Users user, String password) throws MessagingException;
+  public Optional<Users> getUserFromRequest(HttpServletRequest request);
 
-    public Optional<Users> getUserFromRequest(HttpServletRequest request);
+  public boolean isCorrectPassword(Users user, String currentPassword);
 
-    public boolean isCorrectPassword(Users user, String currentPassword);
-
-    List<Response1Form> topUserBuyTheMost(int i);
+  List<Response1Form> topUserBuyTheMost(int i);
 }

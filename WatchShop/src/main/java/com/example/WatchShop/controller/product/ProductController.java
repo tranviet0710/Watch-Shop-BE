@@ -6,7 +6,7 @@ import com.example.WatchShop.model.dto.res.ProductDetailResDTO;
 import com.example.WatchShop.model.dto.res.ProductResDTO;
 import com.example.WatchShop.service.impl.ProductServiceImpl;
 import com.example.WatchShop.service.impl.RatingServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,69 +19,112 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/product")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ProductController {
-    @Autowired
-    private ProductServiceImpl productService;
+  private final ProductServiceImpl productService;
+  private final RatingServiceImpl ratingService;
 
-    @Autowired
-    private RatingServiceImpl ratingService;
-
-    //Lấy danh sách của product
-    @GetMapping("/")
-    ResponseEntity<?> getAllProduct(@RequestParam(value = "brandId", required = false) Long brandID) {
-        List<Products> products = productService.findAllProduct();
-        if (brandID != null) {
-            products = products.stream().filter(x -> x.getBrands().getId().equals(brandID)).toList();
-        }
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
-        }
-        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
-        productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
+  //Lấy danh sách của product
+  @GetMapping("/")
+  ResponseEntity<?> getAllProduct(@RequestParam(value = "brandId", required = false) Long brandID) {
+    List<Products> products = productService.findAllProduct();
+    if (brandID != null) {
+      products = products
+          .stream()
+          .filter(x -> x.getBrands().getId().equals(brandID))
+          .toList();
     }
 
-    @GetMapping("/top5")
-    ResponseEntity<?> getTop5Product() {
-        List<Products> products = productService.findAllProduct().stream().filter(x -> x.getSoldQuantity() != null).
-                sorted(Comparator.comparing(Products::getSoldQuantity, Comparator.reverseOrder())).limit(5).toList();
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", products));
-        }
-        List<ProductDetailResDTO> productDetailResDTOS = products.stream().map(ProductDetailResDTO::new).toList();
-        productDetailResDTOS.stream().forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success", "data", productDetailResDTOS));
+    if (products.isEmpty()) {
+      return ResponseEntity
+          .status(HttpStatus.OK)
+          .body(Map.of("status", "success",
+              "data", products));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
-        Optional<Products> products = productService.getProductById(id);
-        ProductDetailResDTO productDetailResDTO = new ProductDetailResDTO(products.get());
-        List<Products> getSameBrandProducts = productService.getProductsByBrand(productDetailResDTO.getBrandID());
-        List<ProductResDTO> getSameBrandProductsRes = getSameBrandProducts.stream()
-                .map(ProductResDTO::new)
-                .toList();
-        getSameBrandProductsRes.stream().forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
-        productDetailResDTO.setSameBrandProducts(getSameBrandProductsRes);
+    List<ProductDetailResDTO> productDetailResDTOS = products
+        .stream()
+        .map(ProductDetailResDTO::new)
+        .toList();
 
-        return ResponseEntity.ok(productDetailResDTO);
+    productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(Map.of("status", "success",
+            "data", productDetailResDTOS));
+  }
+
+  @GetMapping("/top5")
+  ResponseEntity<?> getTop5Product() {
+    List<Products> products = productService
+        .findAllProduct()
+        .stream()
+        .filter(x -> x.getSoldQuantity() != null)
+        .sorted(Comparator.comparing(Products::getSoldQuantity, Comparator.reverseOrder()))
+        .limit(5)
+        .toList();
+
+    if (products.isEmpty()) {
+      return ResponseEntity
+          .status(HttpStatus.OK)
+          .body(Map.of("status", "success",
+              "data", products));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products) {
-        System.err.println(products);
-        Products products1 = productService.save(products);
-        if (products1 == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(products1);
-    }
+    List<ProductDetailResDTO> productDetailResDTOS = products
+        .stream()
+        .map(ProductDetailResDTO::new)
+        .toList();
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
-        if (!productService.removeProduct(id)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("status", "error"));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("status", "success"));
+    productDetailResDTOS.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(Map.of("status", "success",
+            "data", productDetailResDTOS));
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
+    Optional<Products> products = productService.getProductById(id);
+    ProductDetailResDTO productDetailResDTO = new ProductDetailResDTO(products.get());
+    List<Products> getSameBrandProducts = productService.getProductsByBrand(productDetailResDTO.getBrandID());
+
+    List<ProductResDTO> getSameBrandProductsRes = getSameBrandProducts
+        .stream()
+        .map(ProductResDTO::new)
+        .toList();
+
+    getSameBrandProductsRes.forEach(p -> p.setStar(ratingService.getStarOfProduct(p.getId())));
+    productDetailResDTO.setSameBrandProducts(getSameBrandProductsRes);
+
+    return ResponseEntity.ok(productDetailResDTO);
+  }
+
+  @PostMapping("/")
+  public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products) {
+    System.err.println(products);
+    Products products1 = productService.save(products);
+    if (products1 == null) {
+      return ResponseEntity
+          .status(HttpStatus.BAD_REQUEST)
+          .body(null);
     }
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(products1);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
+    if (!productService.removeProduct(id)) {
+      return ResponseEntity
+          .status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("status", "error"));
+    }
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(Map.of("status", "success"));
+  }
 }

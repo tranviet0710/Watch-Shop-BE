@@ -2,17 +2,13 @@ package com.example.WatchShop.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Date;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Brands {
@@ -25,5 +21,5 @@ public class Brands {
 
     @OneToMany(mappedBy = "brands")
     @JsonBackReference
-    private List<Products> products; // to list
+    private List<Products> products;
 }

@@ -7,22 +7,21 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Carts {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long quantity;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
+  private long quantity;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private Users users;
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  private Users users;
 
-    @OneToMany(mappedBy = "carts")
-    @JsonBackReference
-    private List<CartDetail> cartDetails;
+  @OneToMany(mappedBy = "carts")
+  @JsonBackReference
+  private List<CartDetail> cartDetails;
 }

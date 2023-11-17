@@ -16,24 +16,31 @@ import java.nio.file.Paths;
 @CrossOrigin(origins = "*")
 public class ImageController {
 
-    @GetMapping("/{imageName}")
-    public ResponseEntity<?> getImage(@PathVariable("imageName") String imageName) {
-        if (imageName != null) {
-            Path fileName = Paths.get(ImageFile.PATH_IMAGE, imageName);
-            try {
-                byte[] buffer = Files.readAllBytes(fileName);
-                ByteArrayResource bytes = new ByteArrayResource(buffer);
-                return ResponseEntity.ok()
-                        .contentLength(buffer.length)
-                        .contentType(MediaType.IMAGE_PNG)
-                        .body(bytes);
-            } catch (IOException e) {
-                if (!"undefined".equals(imageName)) {
-                    return ResponseEntity.badRequest().build();
-                }
-                return ResponseEntity.ok().build();
-            }
+  @GetMapping("/{imageName}")
+  public ResponseEntity<?> getImage(@PathVariable("imageName") String imageName) {
+    if (imageName != null) {
+      Path fileName = Paths.get(ImageFile.PATH_IMAGE, imageName);
+      try {
+        byte[] buffer = Files.readAllBytes(fileName);
+        ByteArrayResource bytes = new ByteArrayResource(buffer);
+        return ResponseEntity
+            .ok()
+            .contentLength(buffer.length)
+            .contentType(MediaType.IMAGE_PNG)
+            .body(bytes);
+      } catch (IOException e) {
+        if (!"undefined".equals(imageName)) {
+          return ResponseEntity
+              .badRequest()
+              .build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity
+            .ok()
+            .build();
+      }
     }
+    return ResponseEntity
+        .badRequest()
+        .build();
+  }
 }

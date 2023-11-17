@@ -1,14 +1,10 @@
 package com.example.WatchShop.model.dto.req;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class CartReqDTO {
     private Long userId;
     private Long productId;
-    private Integer amount =1;
+    private Integer amount;
 }
