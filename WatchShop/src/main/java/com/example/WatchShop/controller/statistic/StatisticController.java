@@ -1,13 +1,11 @@
 package com.example.WatchShop.controller.statistic;
 
-import com.example.WatchShop.model.Products;
 import com.example.WatchShop.model.Rating;
 import com.example.WatchShop.model.dto.res.ProductStatisticalResDTO;
 import com.example.WatchShop.model.dto.res.Response1Form;
 import com.example.WatchShop.model.dto.res.UserResDTO;
 import com.example.WatchShop.repository.ProductRepository;
 import com.example.WatchShop.service.i_service.OrderService;
-import com.example.WatchShop.service.i_service.ProductService;
 import com.example.WatchShop.service.i_service.RatingService;
 import com.example.WatchShop.service.i_service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/statistical")
@@ -38,6 +35,7 @@ public class StatisticController {
     List<ProductStatisticalResDTO> bestSellers = productRepository
         .findAll()
         .stream()
+        .filter(products -> products.getSoldQuantity() > 0)
         .map(ProductStatisticalResDTO::new)
         .sorted(Comparator.comparing(ProductStatisticalResDTO::getQuantitySold, Comparator.reverseOrder()))
         .limit(5)

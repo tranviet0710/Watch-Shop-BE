@@ -1,8 +1,8 @@
 INSERT INTO watchshop.dbo.brands ( create_date, name, update_date)
-VALUES ( null, N'Samsung', null);
+VALUES ( GETDATE(), N'Samsung', GETDATE());
 INSERT INTO watchshop.dbo.brands (create_date, name, update_date)
-VALUES ( null, N'Apple', null);
+VALUES ( GETDATE(), N'Apple', GETDATE());
 INSERT INTO watchshop.dbo.brands ( create_date, name, update_date)
-VALUES ( null, N'Garmin', null);
+VALUES ( GETDATE(), N'Garmin', GETDATE());
 INSERT INTO watchshop.dbo.brands ( create_date, name, update_date)
-VALUES ( null, N'Casio', null);
+VALUES ( GETDATE(), N'Casio', GETDATE());
