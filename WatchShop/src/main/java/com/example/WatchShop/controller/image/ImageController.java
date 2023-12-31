@@ -15,13 +15,12 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("api/image")
-@CrossOrigin(origins = "*")
 @Slf4j
 public class ImageController {
 
   @GetMapping("/{imageName}")
   public ResponseEntity<?> getImage(@PathVariable("imageName") String imageName) {
-    log.info("getImage");
+//    log.info("getImage");
     if (imageName == null) {
       return ResponseEntity
           .status(HttpStatus.BAD_REQUEST)

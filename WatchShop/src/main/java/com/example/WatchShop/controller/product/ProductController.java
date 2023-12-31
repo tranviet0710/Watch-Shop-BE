@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/product")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Slf4j
 public class ProductController {
@@ -55,15 +54,20 @@ public class ProductController {
   @PostMapping("/")
   public ResponseEntity<?> addProduct(@ModelAttribute ProductReqDTO products) {
     log.info("addProduct");
-    Products products1 = productService.save(products);
-    if (products1 == null) {
+    int status = productService.save(products);
+    if (status == 1) {
       return ResponseEntity
           .status(HttpStatus.BAD_REQUEST)
           .build();
     }
+    if (status == 2) {
+      return ResponseEntity
+          .status(HttpStatus.CONFLICT)
+          .build();
+    }
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(products1);
+        .build();
   }
 
   @DeleteMapping("/{id}")

@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/cart")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Slf4j
 public class CartController {

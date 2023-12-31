@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/order")
-@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 public class OrderController {

@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProductService {
   ProductDetailResDTO getProductById(Long id);
 
-  Products save(ProductReqDTO products);
+  int save(ProductReqDTO products);
 
   Products save(Products products);
 

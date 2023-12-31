@@ -46,13 +46,13 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Products save(ProductReqDTO products) {
+  public int save(ProductReqDTO products) {
     Brands brands = brandRepository
         .findById(products.getIdBrand())
         .orElse(null);
 
     if (brands == null) {
-      return null;
+      return 1;
     }
 
     Calendar calendar = Calendar.getInstance();
@@ -60,110 +60,127 @@ public class ProductServiceImpl implements ProductService {
 
     if (products.getId() == null) {
       //addProduct
-      try {
-        String fileName = ImageFile.saveImageFile(products.getImages());
-        if (fileName.isEmpty()) {
-          return null;
-        }
-        Products newProduct = new Products();
-        newProduct.setName(products.getName());
-        newProduct.setPrice(products.getPrice());
-        newProduct.setDescription(products.getDescription());
-        newProduct.setDiscount(products.getDiscount());
-        newProduct.setQuantity(products.getQuantity());
-        newProduct.setSoldQuantity(products.getSoldQuantity());
-        newProduct.setModel(products.getModel());
-        newProduct.setColor(products.getColor());
-        newProduct.setOrigin(products.getOrigin());
-        newProduct.setWarrantyPeriod(products.getWarrantyPeriod());
-        newProduct.setScreenSize(products.getScreenSize());
-        newProduct.setFaceMaterial(products.getFaceMaterial());
-        newProduct.setFaceSize(products.getFaceSize());
-        newProduct.setFrameMaterial(products.getFrameMaterial());
-        newProduct.setWireMaterial(products.getWireMaterial());
-        newProduct.setProductWeight(products.getProductWeight());
-        newProduct.setCreateDate(currentDate);
-        newProduct.setUpdateDate(currentDate);
-        newProduct.setBrands(brands);
+      return addProducts(products, currentDate, brands);
+    } else {
+      //update
+      return updateProduct(products, brands, currentDate);
+    }
+  }
 
-        Images image = new Images();
-        image.setCreateDate(currentDate);
-        image.setUpdateDate(currentDate);
-        image.setSource(fileName);
-        image.setProducts(newProduct);
-        newProduct.setImages(Collections.singletonList(image));
-        return productRepository.save(newProduct);
+  private int addProducts(ProductReqDTO products, Date currentDate, Brands brands) {
+    int count = productRepository.countByName(products.getName());
+
+    // đã tồn tại sản phẩm
+    if (count > 0) {
+      return 2;
+    }
+
+    try {
+      String fileName = ImageFile.saveImageFile(products.getImages());
+      if (fileName.isEmpty()) {
+        return 1;
+      }
+
+      Products newProduct = new Products();
+      newProduct.setName(products.getName());
+      newProduct.setPrice(products.getPrice());
+      newProduct.setDescription(products.getDescription());
+      newProduct.setDiscount(products.getDiscount());
+      newProduct.setQuantity(products.getQuantity());
+      newProduct.setSoldQuantity(products.getSoldQuantity());
+      newProduct.setModel(products.getModel());
+      newProduct.setColor(products.getColor());
+      newProduct.setOrigin(products.getOrigin());
+      newProduct.setWarrantyPeriod(products.getWarrantyPeriod());
+      newProduct.setScreenSize(products.getScreenSize());
+      newProduct.setFaceMaterial(products.getFaceMaterial());
+      newProduct.setFaceSize(products.getFaceSize());
+      newProduct.setFrameMaterial(products.getFrameMaterial());
+      newProduct.setWireMaterial(products.getWireMaterial());
+      newProduct.setProductWeight(products.getProductWeight());
+      newProduct.setCreateDate(currentDate);
+      newProduct.setUpdateDate(currentDate);
+      newProduct.setBrands(brands);
+
+      Images image = new Images();
+      image.setCreateDate(currentDate);
+      image.setUpdateDate(currentDate);
+      image.setSource(fileName);
+      image.setProducts(newProduct);
+      newProduct.setImages(Collections.singletonList(image));
+      productRepository.save(newProduct);
+      return 0;
+    } catch (IOException e) {
+      log.error("save file error", e);
+      return 2;
+    }
+  }
+
+  private int updateProduct(ProductReqDTO products, Brands brands, Date currentDate) {
+    Optional<Products> optionalProducts = productRepository.findById(products.getId());
+    if (optionalProducts.isEmpty()) {
+      return 1;
+    }
+
+    Products oldProduct = optionalProducts.get();
+    if (!Objects.equals(oldProduct.getBrands().getId(), products.getIdBrand())) {
+      oldProduct.setBrands(brands);
+    }
+
+    if (products.getImages() != null) {
+      String fileName = null;
+      try {
+        fileName = ImageFile.saveImageFile(products.getImages());
       } catch (IOException e) {
         log.error("save file error", e);
-        return null;
+        return 1;
       }
+      boolean hasRemoved = ImageFile.deleteImageFile(
+          oldProduct
+              .getImages()
+              .stream()
+              .findFirst()
+              .get()
+              .getSource()
+      );
+
+      if (fileName.isEmpty() && hasRemoved) {
+        return 1;
+      }
+
+      Images images = imageRepository.findBySource(
+          oldProduct
+              .getImages()
+              .stream()
+              .findFirst()
+              .get()
+              .getSource()
+      );
+      images.setSource(fileName);
+      images.setUpdateDate(currentDate);
+      oldProduct.setImages(Collections.singletonList(images));
     }
-    //update
-    else {
-      Optional<Products> optionalProducts = productRepository.findById(products.getId());
-      if (optionalProducts.isEmpty()) {
-        return null;
-      }
 
-      Products oldProduct = optionalProducts.get();
-      if (!Objects.equals(oldProduct.getBrands().getId(), products.getIdBrand())) {
-        oldProduct.setBrands(brands);
-      }
-
-      if (products.getImages() != null) {
-        String fileName = null;
-        try {
-          fileName = ImageFile.saveImageFile(products.getImages());
-        } catch (IOException e) {
-          log.error("save file error", e);
-          return null;
-        }
-        boolean hasRemoved = ImageFile.deleteImageFile(
-            oldProduct
-                .getImages()
-                .stream()
-                .findFirst()
-                .get()
-                .getSource()
-        );
-
-        if (fileName.isEmpty() && hasRemoved) {
-          return null;
-        }
-
-        Images images = imageRepository.findBySource(
-            oldProduct
-                .getImages()
-                .stream()
-                .findFirst()
-                .get()
-                .getSource()
-        );
-        images.setSource(fileName);
-        images.setUpdateDate(currentDate);
-        oldProduct.setImages(Collections.singletonList(images));
-      }
-
-      oldProduct.setName(products.getName());
-      oldProduct.setPrice(products.getPrice());
-      oldProduct.setDescription(products.getDescription());
-      oldProduct.setDiscount(products.getDiscount());
-      oldProduct.setQuantity(products.getQuantity());
-      oldProduct.setSoldQuantity(products.getSoldQuantity());
-      oldProduct.setModel(products.getModel());
-      oldProduct.setColor(products.getColor());
-      oldProduct.setOrigin(products.getOrigin());
-      oldProduct.setWarrantyPeriod(products.getWarrantyPeriod());
-      oldProduct.setScreenSize(products.getScreenSize());
-      oldProduct.setFaceMaterial(products.getFaceMaterial());
-      oldProduct.setFaceSize(products.getFaceSize());
-      oldProduct.setFrameMaterial(products.getFrameMaterial());
-      oldProduct.setWireMaterial(products.getWireMaterial());
-      oldProduct.setProductWeight(products.getProductWeight());
-      oldProduct.setUpdateDate(currentDate);
-      oldProduct.setBrands(brands);
-      return productRepository.save(oldProduct);
-    }
+    oldProduct.setName(products.getName());
+    oldProduct.setPrice(products.getPrice());
+    oldProduct.setDescription(products.getDescription());
+    oldProduct.setDiscount(products.getDiscount());
+    oldProduct.setQuantity(products.getQuantity());
+    oldProduct.setSoldQuantity(products.getSoldQuantity());
+    oldProduct.setModel(products.getModel());
+    oldProduct.setColor(products.getColor());
+    oldProduct.setOrigin(products.getOrigin());
+    oldProduct.setWarrantyPeriod(products.getWarrantyPeriod());
+    oldProduct.setScreenSize(products.getScreenSize());
+    oldProduct.setFaceMaterial(products.getFaceMaterial());
+    oldProduct.setFaceSize(products.getFaceSize());
+    oldProduct.setFrameMaterial(products.getFrameMaterial());
+    oldProduct.setWireMaterial(products.getWireMaterial());
+    oldProduct.setProductWeight(products.getProductWeight());
+    oldProduct.setUpdateDate(currentDate);
+    oldProduct.setBrands(brands);
+    productRepository.save(oldProduct);
+    return 0;
   }
 
   @Override
@@ -180,6 +197,7 @@ public class ProductServiceImpl implements ProductService {
     Products products = optionalProducts.get();
 
     try {
+      productRepository.deleteById(products.getId());
       ImageFile.deleteImageFile(
           products
               .getImages()
@@ -190,9 +208,9 @@ public class ProductServiceImpl implements ProductService {
       );
     } catch (Exception e) {
       log.error("handel file error", e);
+      return false;
     }
 
-    productRepository.deleteById(products.getId());
     return true;
   }
 
@@ -212,6 +230,7 @@ public class ProductServiceImpl implements ProductService {
 
     List<ProductDetailResDTO> productDetailResDTOS = products
         .stream()
+        .sorted(Comparator.comparing(Products::getDiscount).reversed())
         .map(ProductDetailResDTO::new)
         .toList();
 

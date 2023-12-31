@@ -35,4 +35,6 @@ public interface UserService {
   public boolean isCorrectPassword(Users user, String currentPassword);
 
   List<Response1Form> topUserBuyTheMost(int i);
+
+  void updateRole(Long id);
 }

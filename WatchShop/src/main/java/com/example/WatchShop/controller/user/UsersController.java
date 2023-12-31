@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("api")
 @RequiredArgsConstructor
 @Slf4j
@@ -109,7 +108,7 @@ public class UsersController {
     List<Users> usersList = userService.findAllUser();
     List<UserResDTO> userResDTOS = usersList
         .stream()
-        .filter(users -> users.getRoles().getName().equals("ROLE_USER"))
+//        .filter(users -> users.getRoles().getName().equals("ROLE_USER"))
         .map(UserResDTO::new)
         .toList();
     return ResponseEntity
@@ -158,5 +157,12 @@ public class UsersController {
         .status(HttpStatus.OK)
         .body(Map.of("status", "success",
             "message", "Users delete successfully"));
+  }
+
+  @PatchMapping("/users/{id}")
+  public ResponseEntity<?> updateRole(@PathVariable Long id) {
+    log.info("update role user");
+    userService.updateRole(id);
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 }

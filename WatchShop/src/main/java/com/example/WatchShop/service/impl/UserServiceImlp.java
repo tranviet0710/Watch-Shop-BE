@@ -177,4 +177,21 @@ public class UserServiceImlp implements UserService {
 
     return response1Forms;
   }
+
+  @Override
+  public void updateRole(Long id) {
+    Optional<Users> user = usersRepository.findById(id);
+    if (user.isPresent()) {
+      Users users = user.get();
+      Roles role = null;
+      String roleName = users.getRoles().getName();
+      if ("ROLE_ADMIN".equals(roleName)) {
+        role = rolesRepository.findByName("ROLE_USER");
+      } else {
+        role = rolesRepository.findByName("ROLE_ADMIN");
+      }
+      users.setRoles(role);
+      usersRepository.save(users);
+    }
+  }
 }

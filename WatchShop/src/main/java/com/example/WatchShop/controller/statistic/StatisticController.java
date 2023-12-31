@@ -20,7 +20,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/statistical")
-@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 public class StatisticController {

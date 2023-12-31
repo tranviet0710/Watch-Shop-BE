@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@CrossOrigin
 @RequestMapping("api/vn-pay")
 @RequiredArgsConstructor
 @Slf4j

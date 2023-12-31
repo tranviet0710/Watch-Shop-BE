@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/brands")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Slf4j
 public class BrandController {
